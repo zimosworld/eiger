@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=1.0.0
+VERSION=1.1.0
 
 ####################################################
 # Functions
@@ -119,6 +119,26 @@ NODE_VERSION=$INIT_NODE_VERSION" > .eiger
 	fi
 }
 
+# Create .docker.env file to work with containers based off https://github.com/zimosworld/php-dev
+function containerEnv {
+
+	if [ -f "$(pwd)/.docker.env" ]; then
+		message "INFO" ".docker.env file already exists. Exiting..."
+		exit 1
+	fi
+	
+	message "INFO" "Creating .docker.env file with OS as $OS_TYPE"
+	echo "HOST_UNAME=$OS_TYPE" > .docker.env
+	
+	if [ $OS_TYPE = Linux ]; then
+		echo "HOST_UID=$USER
+HOST_GID=$GROUP" >> .docker.env
+	fi
+	
+	message "INFO" "Creating .docker.env completed"
+
+}
+
 # Ask Y/N Question and loop until valid response
 function ask {
 
@@ -161,6 +181,7 @@ Run a command that runs in a docker container
 
 Commands:
   composer	Run composer
+  dei		Creates .docker.env with settings based on system
   init		Initialize Eiger on project
   npm		Run NPM
   yarn		Run Yarn"
@@ -225,10 +246,12 @@ debug "Machine type ${unameOut}"
 case "${unameOut}" in
     Linux*|Darwin*)     
 		debug "Defining variables for linux."
+		OS_TYPE=Linux
 		;;
     CYGWIN*|MINGW*)    
 		debug "Defining variables for windows."
 		
+		OS_TYPE=Windows
 		USER="www-data"
 		GROUP="www-data"
 		COMMAND_PREFIX="winpty"
@@ -254,6 +277,10 @@ case $1 in
 		debug "Running init, command ${@}"
 		initialize $@
 		;;
+	dei|docker-env-init)
+		debug "Running init, command ${@}"
+		containerEnv
+		;;
 	version)
 		debug "Running version, command ${@}"
 		message "INFO" "Script version: $VERSION"
@@ -262,7 +289,7 @@ case $1 in
 		debug "Running update, command ${@}"
 		message "INFO" "Please run `eiger-update` instead."
 		;;
-	commands|--help)
+	commands|help|--help)
 		debug "Running help, command ${@}"
 		eigerHelp
 		;;
