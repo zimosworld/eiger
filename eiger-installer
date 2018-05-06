@@ -46,16 +46,29 @@ function runInstaller {
         exit 1
     fi
 
-    mkdir -p $INSTALL_PATH;
+    if ! mkdir -p $INSTALL_PATH; then
+        message "ERROR" "There was an error making the installation directory ($INSTALL_PATH). Exiting..."
+        exit 1
+    fi
 
     cd $INSTALL_PATH;
 
-    git clone git@bitbucket.org:zimosworld/eigertest.git . &> /dev/null
+    if git clone https://github.com/zimosworld/eiger.git .; then
 
-    echo "
+        message "INFO" "Script installed, adding alias..."
+
+        if echo "
 alias eiger='bash $INSTALL_PATH/eiger'
-alias eiger-update='bash $INSTALL_PATH/eiger-update'" >> ~/.bashrc
+alias eiger-update='bash $INSTALL_PATH/eiger-update'" >> ~/.bashrc; then
 
+            message "INFO" "Alias added successfully, installation completed."
+        else
+            message "ERROR" "There was an error adding Alias. Exiting..."
+        fi
+
+    else
+        message "ERROR" "There was an issue pulling down the script. Exiting..."
+    fi
 }
 
 runInstaller
