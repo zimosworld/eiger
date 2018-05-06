@@ -1,0 +1,272 @@
+#!/bin/bash
+
+DEBUG=false
+VERSION=1.0.0
+
+####################################################
+# Functions
+####################################################
+
+# Echo debug content if debug is enabled
+function debug {
+
+	if [ $DEBUG == "true" ]; then
+		message "DEBUG" "${1}" 
+	fi
+}
+
+# Echo message with time prefixed
+function message {
+	
+	TIMESTAMP=`date "+%H:%M:%S"`
+	
+	echo "[$TIMESTAMP] ${1} - ${2}"
+} 
+
+# Check certain commands are installed
+function checkCommands {
+
+	debug "Running command checks."
+
+	if ! [ -x "$(command -v docker)" ]; then
+		message "ERROR" "Docker is not installed. Exiting..."
+		exit 1
+	else
+		debug "Confirmed Docker is installed."
+	fi
+	
+	if ! [ -x "$(command -v git)" ]; then
+		message "ERROR" "Git is not installed. Exiting..."
+		exit 1
+	else
+		debug "Confirmed Git is installed."
+	fi
+	
+	debug "Finished running command checks."
+}
+
+# Run Composer command inside docker container
+function runComposer {
+
+	if ! [ COMPOSER_ENABLED ]; then
+		message "ERROR" "Composer is disabled on this project. Existing..."
+		exit 1
+	fi
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$FULL_COMPOSE_PATH:/app --volume $PATH_PREFIX$SSH_KEY_PATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@
+	debug "Finished running composer"
+}
+
+# Run Node command inside docker container
+function runNode {
+
+	if ! [ NODE_ENABLED ]; then
+		message "ERROR" "Node (NPM/YARN) is disabled on this project. Existing..."
+		exit 1
+	fi
+	
+	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$FULL_NPM_PATH:/usr/src/app --workdir $PATH_PREFIX/usr/src/app node:$NODE_VERSION $@
+	debug "Finished running npm/yarn"
+}
+
+# Initialize eiger for project (Creates .eiger file after asking some questions)
+function initialize {
+	if [ -f "$(pwd)/.eiger" ]; then
+		message "INFO" "Eiger is already setup. Exiting..."
+		exit 1
+	fi
+	
+	INIT_COMPOSER_ENABLED=false
+	INIT_COMPOSER_PATH=
+	INIT_COMPOSER_VERSION=
+	
+	if ask "Enabled Composer?" N; then
+		INIT_COMPOSER_ENABLED=true
+		
+		read -p "Relative path to composer.json file? [/]): " UI_COMPOSER_PATH
+		INIT_COMPOSER_PATH=${UI_COMPOSER_PATH:-/}
+		
+		read -p "Which version of Composer would you like to use? See https://hub.docker.com/_/composer/ for available versions. (Default: latest): " UI_COMPOSER_VERSION
+		INIT_COMPOSER_VERSION=${UI_COMPOSER_VERSION:-latest}
+	fi
+	
+	INIT_NODE_ENABLED=false
+	INIT_NODE_PATH=
+	INIT_NODE_VERSION=
+	
+	if ask "Enabled Node (NPM/YARN)?" N; then
+		INIT_NODE_ENABLED=true
+		
+		read -p "Relative path to package.json file? [/]): " UI_NODE_PATH
+		INIT_NODE_PATH=${UI_NODE_PATH:-/}
+		
+		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_NODE_VERSION
+		INIT_NODE_VERSION=${UI_NODE_VERSION:-9.11.1}
+	fi
+	
+	echo "COMPOSER_ENABLED=$INIT_COMPOSER_ENABLED
+COMPOSER_PATH=$INIT_COMPOSER_PATH
+COMPOSER_VERSION=$INIT_COMPOSER_VERSION
+
+NODE_ENABLED=$INIT_NODE_ENABLED
+NPM_PATH=$INIT_NODE_PATH
+NODE_VERSION=$INIT_NODE_VERSION" > .eiger
+
+	if [ -f "$(pwd)/.eiger" ]; then
+		message "INFO" ".eiger file created successfully."
+	else 
+		message "ERROR" "There was an issue creating the .eiger file."
+	fi
+}
+
+# Ask Y/N Question and loop until valid response
+function ask {
+
+    while true; do
+
+        if [ "${2:-}" = "Y" ]; then
+            prompt="Y/n"
+            default=Y
+        elif [ "${2:-}" = "N" ]; then
+            prompt="y/N"
+            default=N
+        else
+            prompt="y/n"
+            default=
+        fi
+
+        echo -n "$1 [$prompt]:"
+
+        read reply </dev/tty
+
+        if [ -z "$reply" ]; then
+            reply=$default
+        fi
+
+        case "$reply" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+
+    done
+}
+
+# Echo help content
+function eigerHelp {
+	
+	echo "
+Usage: eiger [COMMAND] [ARG...]
+	
+Run a command that runs in a docker container
+
+Commands:
+  composer	Run composer
+  init		Initialize Eiger on project
+  npm		Run NPM
+  yarn		Run Yarn"
+}
+
+debug "Functions loaded"
+
+####################################################
+# Default Configs - *DO NOT CHANGE*
+####################################################
+COMPOSER_ENABLED=true
+COMPOSER_PATH=/
+COMPOSER_VERSION=latest
+
+NODE_ENABLED=true
+NPM_PATH=/
+NODE_VERSION=latest
+
+####################################################
+# Load Project Configs
+####################################################
+
+if [ -f "$(pwd)/.eiger" ]; then
+	source $(pwd)/.eiger
+else
+	message "WARNING" "No config found, using defaults."
+fi
+
+####################################################
+# General Configs
+####################################################
+
+FULL_COMPOSE_PATH=$(pwd)$COMPOSER_PATH
+FULL_NPM_PATH=$(pwd)$NPM_PATH
+SSH_KEY_PATH=$HOME/.ssh
+
+####################################################
+# Setting OS Default Configs
+####################################################
+
+PATH_PREFIX=
+COMMAND_PREFIX=
+USER=$(id -u)
+GROUP=$(id -g)
+RUN_AS="--user $USER:$GROUP"
+
+####################################################
+# Main Entry Point
+####################################################
+
+checkCommands
+
+# Linux* = Linux
+# Darwin* = Mac
+# CYGWIN* = Cygwin (Windows)
+# MINGW* = MinGw (Windows)
+
+unameOut="$(uname -s)"
+
+debug "Machine type ${unameOut}"
+
+case "${unameOut}" in
+    Linux*|Darwin*)     
+		debug "Defining variables for linux."
+		;;
+    CYGWIN*|MINGW*)    
+		debug "Defining variables for windows."
+		
+		USER="www-data"
+		GROUP="www-data"
+		COMMAND_PREFIX="winpty"
+		PATH_PREFIX=/
+		RUN_AS=
+		;;
+    *)          
+		message "ERROR" "Unknown machine type ${unameOut}. Exiting..."
+		exit 1
+		;;
+esac
+
+case $1 in
+	composer)	
+		debug "Running composer, command ${@}"
+		runComposer $@
+		;;
+	npm|yarn)
+		debug "Running npm/yarn, command ${@}"
+		runNode $@
+		;;
+	init)
+		debug "Running init, command ${@}"
+		initialize $@
+		;;
+	version)
+		debug "Running version, command ${@}"
+		message "INFO" "Script version: $VERSION"
+		;;
+	update)
+		debug "Running update, command ${@}"
+		message "INFO" "Please run `eiger-update` instead."
+		;;
+	commands|--help)
+		debug "Running help, command ${@}"
+		eigerHelp
+		;;
+	*)
+		message "ERROR" "Unknown command. Exiting..."
+		;;
+esac

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+DEBUG=false
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+####################################################
+# Functions
+####################################################
+
+# Echo debug content if debug is enabled
+function debug {
+
+	if [ $DEBUG == "true" ]; then
+		message "DEBUG" "${1}" 
+	fi
+}
+
+# Echo message with time prefixed
+function message {
+	
+	TIMESTAMP=`date "+%H:%M:%S"`
+	
+	echo "[$TIMESTAMP] ${1} - ${2}"
+}
+
+# Check certain commands are installed
+function checkCommands {
+
+	debug "Running command checks."
+	
+	if ! [ -x "$(command -v git)" ]; then
+		message "ERROR" "Git is not installed. Exiting..."
+		exit 1
+	else
+		debug "Confirmed Git is installed."
+	fi
+	
+	debug "Finished running command checks."
+}
+
+# Run logic to update
+function selfUpdate {
+    cd "$SCRIPTPATH"
+	
+	if ! [ -d "$SCRIPTPATH/.git" ]; then
+		message "ERROR" "Missing git directory, please install eiger with the installer script. Exiting..."
+		exit 1
+	fi
+
+	debug "Checking setup as repo complete"
+	
+    git fetch &> /dev/null
+
+    if [ "$(git rev-parse origin/master)" != "$(git rev-parse HEAD)" ]; then
+        message "INFO" "New version found, updating..."
+        git pull origin master &> /dev/null
+        message "INFO" "Running new version..."
+        exit 1
+    fi
+    message "INFO" "Already on the latest version."
+}
+
+selfUpdate

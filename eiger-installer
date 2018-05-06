@@ -1,0 +1,61 @@
+#!/bin/bash
+
+DEBUG=false
+INSTALL_PATH=~/.eiger
+
+####################################################
+# Functions
+####################################################
+
+# Echo debug content if debug is enabled
+function debug {
+
+	if [ $DEBUG == "true" ]; then
+		message "DEBUG" "${1}"
+	fi
+}
+
+# Echo message with time prefixed
+function message {
+
+	TIMESTAMP=`date "+%H:%M:%S"`
+
+	echo "[$TIMESTAMP] ${1} - ${2}"
+}
+
+# Check certain commands are installed
+function checkCommands {
+
+	debug "Running command checks."
+
+	if ! [ -x "$(command -v git)" ]; then
+		message "ERROR" "Git is not installed. Exiting..."
+		exit 1
+	else
+		debug "Confirmed Git is installed."
+	fi
+
+	debug "Finished running command checks."
+}
+
+# Run local to install
+function runInstaller {
+
+    if [ -f "$INSTALL_PATH/.eiger/eiger" ]; then
+        message "ERROR" "Eiger is already installed, please use the updater to update. Exiting..."
+        exit 1
+    fi
+
+    mkdir -p $INSTALL_PATH;
+
+    cd $INSTALL_PATH;
+
+    git clone git@bitbucket.org:zimosworld/eigertest.git . &> /dev/null
+
+    echo "
+alias eiger='bash $INSTALL_PATH/eiger'
+alias eiger-update='bash $INSTALL_PATH/eiger-update'" >> ~/.bashrc
+
+}
+
+runInstaller
