@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+INIT_VERSION=1.0.0
+INIT_COMMAND="init"
+INIT_FUNCTION="initRun"
+INIT_HELP="Initialize Eiger on project"
+
+# Initialize eiger for project (Creates .eiger file after asking some questions)
+function initRun {
+	if [ -f "$(pwd)/.eiger" ]; then
+		message "INFO" "Eiger is already setup. Exiting..."
+		exit 1
+	fi
+	
+	INIT_COMPOSER_ENABLED=false
+	INIT_COMPOSER_PATH=
+	INIT_COMPOSER_VERSION=
+	
+	if ask "Enabled Composer?" N; then
+		INIT_COMPOSER_ENABLED=true
+		
+		read -p "Relative path to composer.json file? [/]): " UI_COMPOSER_PATH
+		INIT_COMPOSER_PATH=${UI_COMPOSER_PATH:-/}
+		
+		read -p "Which version of Composer would you like to use? See https://hub.docker.com/_/composer/ for available versions. (Default: latest): " UI_COMPOSER_VERSION
+		INIT_COMPOSER_VERSION=${UI_COMPOSER_VERSION:-latest}
+	fi
+	
+	INIT_NODE_ENABLED=false
+	INIT_NODE_PATH=
+	INIT_NODE_VERSION=
+	
+	if ask "Enabled Node (NPM/YARN)?" N; then
+		INIT_NODE_ENABLED=true
+		
+		read -p "Relative path to package.json file? [/]): " UI_NODE_PATH
+		INIT_NODE_PATH=${UI_NODE_PATH:-/}
+		
+		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_NODE_VERSION
+		INIT_NODE_VERSION=${UI_NODE_VERSION:-9.11.1}
+	fi
+	
+	echo "COMPOSER_ENABLED=$INIT_COMPOSER_ENABLED
+COMPOSER_PATH=$INIT_COMPOSER_PATH
+COMPOSER_VERSION=$INIT_COMPOSER_VERSION
+
+NODE_ENABLED=$INIT_NODE_ENABLED
+NPM_PATH=$INIT_NODE_PATH
+NODE_VERSION=$INIT_NODE_VERSION" > .eiger
+
+	if [ -f "$(pwd)/.eiger" ]; then
+		message "INFO" ".eiger file created successfully."
+	else 
+		message "ERROR" "There was an issue creating the .eiger file."
+	fi
+}

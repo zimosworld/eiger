@@ -1,7 +1,12 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=1.1.0
+VERSION=2.0.0
+
+SSHKEYPATH=$HOME/.ssh
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+PLUGINPATH=$SCRIPTPATH/plugins
 
 ####################################################
 # Functions
@@ -45,100 +50,6 @@ function checkCommands {
 	debug "Finished running command checks."
 }
 
-# Run Composer command inside docker container
-function runComposer {
-
-	if ! [ COMPOSER_ENABLED ]; then
-		message "ERROR" "Composer is disabled on this project. Existing..."
-		exit 1
-	fi
-
-	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$FULL_COMPOSE_PATH:/app --volume $PATH_PREFIX$SSH_KEY_PATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@
-	debug "Finished running composer"
-}
-
-# Run Node command inside docker container
-function runNode {
-
-	if ! [ NODE_ENABLED ]; then
-		message "ERROR" "Node (NPM/YARN) is disabled on this project. Existing..."
-		exit 1
-	fi
-	
-	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$FULL_NPM_PATH:/usr/src/app --workdir $PATH_PREFIX/usr/src/app node:$NODE_VERSION $@
-	debug "Finished running npm/yarn"
-}
-
-# Initialize eiger for project (Creates .eiger file after asking some questions)
-function initialize {
-	if [ -f "$(pwd)/.eiger" ]; then
-		message "INFO" "Eiger is already setup. Exiting..."
-		exit 1
-	fi
-	
-	INIT_COMPOSER_ENABLED=false
-	INIT_COMPOSER_PATH=
-	INIT_COMPOSER_VERSION=
-	
-	if ask "Enabled Composer?" N; then
-		INIT_COMPOSER_ENABLED=true
-		
-		read -p "Relative path to composer.json file? [/]): " UI_COMPOSER_PATH
-		INIT_COMPOSER_PATH=${UI_COMPOSER_PATH:-/}
-		
-		read -p "Which version of Composer would you like to use? See https://hub.docker.com/_/composer/ for available versions. (Default: latest): " UI_COMPOSER_VERSION
-		INIT_COMPOSER_VERSION=${UI_COMPOSER_VERSION:-latest}
-	fi
-	
-	INIT_NODE_ENABLED=false
-	INIT_NODE_PATH=
-	INIT_NODE_VERSION=
-	
-	if ask "Enabled Node (NPM/YARN)?" N; then
-		INIT_NODE_ENABLED=true
-		
-		read -p "Relative path to package.json file? [/]): " UI_NODE_PATH
-		INIT_NODE_PATH=${UI_NODE_PATH:-/}
-		
-		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_NODE_VERSION
-		INIT_NODE_VERSION=${UI_NODE_VERSION:-9.11.1}
-	fi
-	
-	echo "COMPOSER_ENABLED=$INIT_COMPOSER_ENABLED
-COMPOSER_PATH=$INIT_COMPOSER_PATH
-COMPOSER_VERSION=$INIT_COMPOSER_VERSION
-
-NODE_ENABLED=$INIT_NODE_ENABLED
-NPM_PATH=$INIT_NODE_PATH
-NODE_VERSION=$INIT_NODE_VERSION" > .eiger
-
-	if [ -f "$(pwd)/.eiger" ]; then
-		message "INFO" ".eiger file created successfully."
-	else 
-		message "ERROR" "There was an issue creating the .eiger file."
-	fi
-}
-
-# Create .docker.env file to work with containers based off https://github.com/zimosworld/php-dev
-function containerEnv {
-
-	if [ -f "$(pwd)/.docker.env" ]; then
-		message "INFO" ".docker.env file already exists. Exiting..."
-		exit 1
-	fi
-	
-	message "INFO" "Creating .docker.env file with OS as $OS_TYPE"
-	echo "HOST_UNAME=$OS_TYPE" > .docker.env
-	
-	if [ $OS_TYPE = Linux ]; then
-		echo "HOST_UID=$USER
-HOST_GID=$GROUP" >> .docker.env
-	fi
-	
-	message "INFO" "Creating .docker.env completed"
-
-}
-
 # Ask Y/N Question and loop until valid response
 function ask {
 
@@ -172,33 +83,48 @@ function ask {
 }
 
 # Echo help content
-function eigerHelp {
+function helpRun {
 	
 	echo "
 Usage: eiger [COMMAND] [ARG...]
 	
 Run a command that runs in a docker container
 
-Commands:
-  composer	Run composer
-  dei		Creates .docker.env with settings based on system
-  init		Initialize Eiger on project
-  npm		Run NPM
-  yarn		Run Yarn"
+Commands:"
+
+for PLUGIN in "${PLUGINS[@]}"
+do
+	# Loop through all the commands the plugin has
+	for c in $(eval echo "$"${PLUGIN}_COMMAND)
+	do
+		echo "  $c        $(eval echo "$"${PLUGIN}_HELP)"
+	done
+done
+  
 }
 
 debug "Functions loaded"
 
 ####################################################
-# Default Configs - *DO NOT CHANGE*
+# Load Plugins
 ####################################################
-COMPOSER_ENABLED=true
-COMPOSER_PATH=/
-COMPOSER_VERSION=latest
 
-NODE_ENABLED=true
-NPM_PATH=/
-NODE_VERSION=latest
+I=0
+PLUGINS=()
+
+for PLUGINNAME in $(find "$PLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+do
+	if [ -f "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
+		source "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME"
+		
+		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
+	
+		I=$I+1
+		debug "Plugin $PLUGINNAME loaded"
+	else 
+		debug "$PLUGINNAME is not a valid plugin, Skipping.."
+	fi
+done
 
 ####################################################
 # Load Project Configs
@@ -209,14 +135,6 @@ if [ -f "$(pwd)/.eiger" ]; then
 else
 	message "WARNING" "No config found, using defaults."
 fi
-
-####################################################
-# General Configs
-####################################################
-
-FULL_COMPOSE_PATH=$(pwd)$COMPOSER_PATH
-FULL_NPM_PATH=$(pwd)$NPM_PATH
-SSH_KEY_PATH=$HOME/.ssh
 
 ####################################################
 # Setting OS Default Configs
@@ -264,36 +182,37 @@ case "${unameOut}" in
 		;;
 esac
 
-case $1 in
-	composer)	
-		debug "Running composer, command ${@}"
-		runComposer $@
+case $1 in 
+	help|-h|--help)
+		helpRun
+		exit 1
 		;;
-	npm|yarn)
-		debug "Running npm/yarn, command ${@}"
-		runNode $@
-		;;
-	init)
-		debug "Running init, command ${@}"
-		initialize $@
-		;;
-	dei|docker-env-init)
-		debug "Running init, command ${@}"
-		containerEnv
+	update|self-update)
+		debug "Running update, command ${@}"
+		message "INFO" "Please run `eiger-update` instead."
 		;;
 	version)
 		debug "Running version, command ${@}"
 		message "INFO" "Script version: $VERSION"
-		;;
-	update)
-		debug "Running update, command ${@}"
-		message "INFO" "Please run `eiger-update` instead."
-		;;
-	commands|help|--help)
-		debug "Running help, command ${@}"
-		eigerHelp
-		;;
-	*)
-		message "ERROR" "Unknown command. Exiting..."
+		exit 1
 		;;
 esac
+
+# Loop through each plugin to search if one has the command being run
+for PLUGIN in "${PLUGINS[@]}"
+do
+	# Loop through all the commands the plugin has
+	for c in $(eval echo "$"${PLUGIN}_COMMAND)
+	do
+		# Check if the command matches
+		if [ $c = $1 ]; then
+			debug "Running $PLUGIN, command ${@}"
+			
+			# Run the function
+			$(eval echo "$"${PLUGIN}_FUNCTION) $@
+			exit 1
+		fi
+	done
+done
+
+message "ERROR" "Command not found. Exiting..."

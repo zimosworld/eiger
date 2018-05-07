@@ -1,2 +1,8 @@
 .idea/*
 .docker.env
+plugins/*
+
+!plugins/composer
+!plugins/dockerenv
+!plugins/init
+!plugins/node
