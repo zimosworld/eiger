@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+COMPOSER_VERSION=1.0.0
+COMPOSER_COMMAND="composer"
+COMPOSER_FUNCTION="composerRun"
+COMPOSER_HELP="Run composer"
+
+# Default configs
+COMPOSER_ENABLED=true
+COMPOSER_PATH=/
+COMPOSER_VERSION=latest
+
+# Run Composer command inside docker container
+function composerRun {
+
+	if ! [ COMPOSER_ENABLED ]; then
+		message "ERROR" "Composer is disabled on this project. Existing..."
+		exit 1
+	fi
+	
+	COMPOSE_FULL_PATH=$(pwd)$COMPOSER_PATH
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$COMPOSE_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@
+	debug "Finished running composer"
+}
