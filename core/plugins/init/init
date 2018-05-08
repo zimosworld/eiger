@@ -6,12 +6,12 @@
 INIT_VERSION=1.0.0
 INIT_COMMAND="init"
 INIT_FUNCTION="initRun"
-INIT_HELP="Initialize Eiger on project"
+INIT_HELP="initHelp"
 
 # Initialize eiger for project (Creates .eiger file after asking some questions)
 function initRun {
 	if [ -f "$(pwd)/.eiger" ]; then
-		message "INFO" "Eiger is already setup. Exiting..."
+		message "INFO" "Eiger is already setup.\nExiting..."
 		exit 1
 	fi
 	
@@ -56,4 +56,9 @@ NODE_VERSION=$INIT_NODE_VERSION" > .eiger
 	else 
 		message "ERROR" "There was an issue creating the .eiger file."
 	fi
+}
+
+# Function for output top level help
+function initHelp {
+	printf "   init\t\t\tInitialize Eiger on project."
 }

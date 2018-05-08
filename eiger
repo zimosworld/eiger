@@ -1,130 +1,38 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=2.0.0
+VERSION=2.1.0
 
 SSHKEYPATH=$HOME/.ssh
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
+
+COREPATH=$SCRIPTPATH/core
+COREPLUGINPATH=$COREPATH/plugins
 PLUGINPATH=$SCRIPTPATH/plugins
 
 ####################################################
 # Functions
 ####################################################
 
-# Echo debug content if debug is enabled
-function debug {
+if [ -f "$COREPATH/common" ]; then
+	source $COREPATH/common
+else
+	echo "ERROR" "Missing core file \"Common\" please reinstall eiger to resolve. Exiting..."
+	exit 1
+fi
 
-	if [ $DEBUG == "true" ]; then
-		message "DEBUG" "${1}" 
-	fi
-}
-
-# Echo message with time prefixed
-function message {
-	
-	TIMESTAMP=`date "+%H:%M:%S"`
-	
-	echo "[$TIMESTAMP] ${1} - ${2}"
-} 
-
-# Check certain commands are installed
-function checkCommands {
-
-	debug "Running command checks."
-
-	if ! [ -x "$(command -v docker)" ]; then
-		message "ERROR" "Docker is not installed. Exiting..."
-		exit 1
-	else
-		debug "Confirmed Docker is installed."
-	fi
-	
-	if ! [ -x "$(command -v git)" ]; then
-		message "ERROR" "Git is not installed. Exiting..."
-		exit 1
-	else
-		debug "Confirmed Git is installed."
-	fi
-	
-	debug "Finished running command checks."
-}
-
-# Ask Y/N Question and loop until valid response
-function ask {
-
-    while true; do
-
-        if [ "${2:-}" = "Y" ]; then
-            prompt="Y/n"
-            default=Y
-        elif [ "${2:-}" = "N" ]; then
-            prompt="y/N"
-            default=N
-        else
-            prompt="y/n"
-            default=
-        fi
-
-        echo -n "$1 [$prompt]:"
-
-        read reply </dev/tty
-
-        if [ -z "$reply" ]; then
-            reply=$default
-        fi
-
-        case "$reply" in
-            Y*|y*) return 0 ;;
-            N*|n*) return 1 ;;
-        esac
-
-    done
-}
-
-# Echo help content
-function helpRun {
-	
-	echo "
-Usage: eiger [COMMAND] [ARG...]
-	
-Run a command that runs in a docker container
-
-Commands:"
-
-for PLUGIN in "${PLUGINS[@]}"
-do
-	# Loop through all the commands the plugin has
-	for c in $(eval echo "$"${PLUGIN}_COMMAND)
-	do
-		echo "  $c        $(eval echo "$"${PLUGIN}_HELP)"
-	done
-done
-  
-}
-
-debug "Functions loaded"
+debug "Core functions loaded"
 
 ####################################################
-# Load Plugins
+# Plugin Loader
 ####################################################
 
-I=0
-PLUGINS=()
-
-for PLUGINNAME in $(find "$PLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
-do
-	if [ -f "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
-		source "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME"
-		
-		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
-	
-		I=$I+1
-		debug "Plugin $PLUGINNAME loaded"
-	else 
-		debug "$PLUGINNAME is not a valid plugin, Skipping.."
-	fi
-done
+if [ -f "$COREPATH/plugin_loader" ]; then
+	source $COREPATH/plugin_loader
+else
+	message "ERROR" "Missing core file \"Plugin Loader\" please reinstall eiger to resolve."
+fi
 
 ####################################################
 # Load Project Configs
@@ -177,24 +85,7 @@ case "${unameOut}" in
 		RUN_AS=
 		;;
     *)          
-		message "ERROR" "Unknown machine type ${unameOut}. Exiting..."
-		exit 1
-		;;
-esac
-
-case $1 in 
-	help|-h|--help)
-		helpRun
-		exit 1
-		;;
-	update|self-update)
-		debug "Running update, command ${@}"
-		message "INFO" "Please run `eiger-update` instead."
-		;;
-	version)
-		debug "Running version, command ${@}"
-		message "INFO" "Script version: $VERSION"
-		exit 1
+		message "ERROR" "Unknown machine type ${unameOut}."
 		;;
 esac
 
@@ -215,4 +106,4 @@ do
 	done
 done
 
-message "ERROR" "Command not found. Exiting..."
+message "ERROR" "Command not found."

@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Echo debug content if debug is enabled
+function debug {
+
+	if [ $DEBUG == "true" ]; then
+		message "DEBUG" "${1}" 
+	fi
+}
+
+# Echo message with time prefixed
+function message {
+	
+	TIMESTAMP=`date "+%H:%M:%S"`
+	
+	printf "[$TIMESTAMP] ${1} - ${2}"
+	
+	if [ $1 = "ERROR" ]; then
+		echo "Exiting..."
+		exit 1
+	fi
+} 
+
+# Check certain commands are installed
+function checkCommands {
+
+	debug "Running command checks."
+
+	if ! [ -x "$(command -v docker)" ]; then
+		message "ERROR" "Docker is not installed."
+	else
+		debug "Confirmed Docker is installed."
+	fi
+	
+	if ! [ -x "$(command -v git)" ]; then
+		message "ERROR" "Git is not installed."
+	else
+		debug "Confirmed Git is installed."
+	fi
+	
+	debug "Finished running command checks."
+}
+
+# Ask Y/N Question and loop until valid response
+function ask {
+
+    while true; do
+
+        if [ "${2:-}" = "Y" ]; then
+            prompt="Y/n"
+            default=Y
+        elif [ "${2:-}" = "N" ]; then
+            prompt="y/N"
+            default=N
+        else
+            prompt="y/n"
+            default=
+        fi
+
+        echo -n "$1 [$prompt]:"
+
+        read reply </dev/tty
+
+        if [ -z "$reply" ]; then
+            reply=$default
+        fi
+
+        case "$reply" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+
+    done
+}

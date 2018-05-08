@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+HELP_VERSION=1.0.0
+HELP_COMMAND="help -h --help"
+HELP_FUNCTION="helpRun"
+
+# Echo help content
+function helpRun {
+	
+	echo "
+Usage: eiger [COMMAND] [ARG...]
+	
+Run a command that runs in a docker container
+
+Commands:"
+
+	for PLUGIN in "${PLUGINS[@]}"
+	do
+		if [[ -v ${PLUGIN}_HELP ]] && typeset -f $(eval echo "$"${PLUGIN}_HELP) > /dev/null; then
+			$(eval echo "$"${PLUGIN}_HELP)
+			printf "\n"
+		fi
+	done
+
+}
