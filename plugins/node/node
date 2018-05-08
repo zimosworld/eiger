@@ -6,7 +6,7 @@
 NODE_VERSION=1.0.0
 NODE_COMMAND="npm yarn"
 NODE_FUNCTION="nodeRun"
-NODE_HELP="Run npm/yarn"
+NODE_HELP="nodeHelp"
 
 # Default configs
 NODE_ENABLED=true
@@ -17,12 +17,16 @@ NODE_VERSION=latest
 function nodeRun {
 
 	if ! [ NODE_ENABLED ]; then
-		message "ERROR" "Node (NPM/YARN) is disabled on this project. Existing..."
-		exit 1
+		message "ERROR" "Node (NPM/YARN) is disabled on this project."
 	fi
 	
 	NODE_FULL_PATH=$(pwd)$NPM_PATH
 	
 	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$NODE_FULL_PATH:/usr/src/app --workdir $PATH_PREFIX/usr/src/app node:$NODE_VERSION $@
 	debug "Finished running npm/yarn"
+}
+
+# Function for output top level help
+function nodeHelp {
+	printf "   npm\t\t\tRun npm.\n   yarn\t\t\tRun yarn."
 }

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+####################################################
+# Load Core Plugins
+####################################################
+
+I=0
+PLUGINS=()
+
+for PLUGINNAME in $(find "$COREPLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+do
+	if [ -f "$COREPLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
+		source "$COREPLUGINPATH/$PLUGINNAME/$PLUGINNAME"
+		
+		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
+	
+		I=$I+1
+		debug "Plugin $PLUGINNAME loaded"
+	else 
+		debug "$PLUGINNAME is not a valid plugin, Skipping.."
+	fi
+done
+
+debug "Core Plugins loaded"
+
+####################################################
+# Load Plugins
+####################################################
+
+for PLUGINNAME in $(find "$PLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+do
+	if [ -f "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
+		source "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME"
+		
+		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
+	
+		I=$I+1
+		debug "Plugin $PLUGINNAME loaded"
+	else 
+		debug "$PLUGINNAME is not a valid plugin, Skipping.."
+	fi
+done
+
+debug "Plugins loaded"

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+UPDATE_VERSION=1.0.0
+UPDATE_COMMAND="update self-update"
+UPDATE_FUNCTION="runUpdate"
+
+
+function runUpdate {
+	message "INFO" "Please run `eiger-update` to update eiger."
+}
