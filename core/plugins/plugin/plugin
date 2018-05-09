@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+PLUGIN_PLUGIN_VERSION=1.0.0
+PLUGIN_PLUGIN_COMMAND="plugin"
+PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"
+PLUGIN_PLUGIN_HELP="pluginHelp"
+
+# Entry point function
+function pluginEntryPoint {
+
+	case $2 in
+		help|--help|-h)
+		  pluginCommandHelp
+		  ;;
+		update)
+		  pluginUpdate $3
+      ;;
+    version)
+      pluginVersion $3
+      ;;
+    install)
+      echo "Not implemented"
+      ;;
+	esac
+
+}
+
+# Run logic to update
+function pluginUpdate {
+
+  local PLUGINNAME=$1
+  local PLUGINROOT=$PLUGINPATH/$PLUGINNAME
+
+  if ! [ -d "$PLUGINROOT" ]; then
+    message "ERROR" "Could not find plugin directory"
+  fi
+
+  cd "$PLUGINROOT"
+
+	if ! [ -d "$PLUGINROOT/.git" ]; then
+		message "ERROR" "The plugin $PLUGINNAME is not a third party plugin."
+	fi
+
+	debug "Checking setup as repo complete"
+
+    git fetch &> /dev/null
+
+    if [ "$(git rev-parse origin/master)" != "$(git rev-parse HEAD)" ]; then
+        message "INFO" "New version of plugin $PLUGINNAME found, updating..."
+        git pull origin master &> /dev/null
+        message "INFO" "Plugin $PLUGINNAME updated..."
+        exit 1
+    fi
+    message "INFO" "Plugin $PLUGINNAME is already on the latest version."
+}
+
+# Get plugin version
+function pluginVersion {
+
+  local PLUGINNAME=$1
+  local PLUGINNAMEUPPER=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
+
+  if [[ -v ${PLUGINNAMEUPPER}_PLUGIN_VERSION ]]; then
+    message "INFO" "Plugin $PLUGINNAME version: $(eval echo "$"${PLUGINNAMEUPPER}_PLUGIN_VERSION)"
+  else
+    message "ERROR" "Could not find plugin $PLUGINNAME version."
+  fi
+
+}
+
+# Plugin help
+function pluginHelp {
+	printf "  plugin\t\tInstall/Update third party plugins."
+}
+
+# Plugin command help
+function pluginCommandHelp {
+
+  printf "\nUsage: eiger plugin [COMMAND] PLUGIN\n\nRun plugin actions.\n\n"
+
+  printf "Commands:\n\n"
+  printf "  update\t\tUpdate third party plugin.\n"
+  printf "  version\t\tGet installed version of plugin.\n"
+
+}

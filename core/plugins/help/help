@@ -3,9 +3,9 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-HELP_VERSION=1.0.0
-HELP_COMMAND="help -h --help"
-HELP_FUNCTION="helpRun"
+HELP_PLUGIN_VERSION=1.1.0
+HELP_PLUGIN_COMMAND="help -h --help"
+HELP_PLUGIN_FUNCTION="helpRun"
 
 # Echo help content
 function helpRun {
@@ -17,10 +17,12 @@ Run a command that runs in a docker container
 
 Commands:"
 
+  # Loop through each plugin
 	for PLUGIN in "${PLUGINS[@]}"
 	do
-		if [[ -v ${PLUGIN}_HELP ]] && typeset -f $(eval echo "$"${PLUGIN}_HELP) > /dev/null; then
-			$(eval echo "$"${PLUGIN}_HELP)
+	  # If the plugin variable help variable exist and the value is the name of a function run the function
+		if [[ -v ${PLUGIN}_PLUGIN_HELP ]] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
+			$(eval echo "$"${PLUGIN}_PLUGIN_HELP)
 			printf "\n"
 		fi
 	done

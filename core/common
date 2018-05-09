@@ -13,7 +13,7 @@ function message {
 	
 	TIMESTAMP=`date "+%H:%M:%S"`
 	
-	printf "[$TIMESTAMP] ${1} - ${2}"
+	printf "[$TIMESTAMP] ${1} - ${2}\n"
 	
 	if [ $1 = "ERROR" ]; then
 		echo "Exiting..."
@@ -57,7 +57,7 @@ function ask {
             default=
         fi
 
-        echo -n "$1 [$prompt]:"
+        echo -n "$1 [$prompt]:" >&2
 
         read reply </dev/tty
 

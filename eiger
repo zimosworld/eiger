@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=2.1.0
+VERSION=2.2.0
 
 SSHKEYPATH=$HOME/.ssh
 SCRIPT=$(readlink -f "$0")
@@ -16,7 +16,7 @@ PLUGINPATH=$SCRIPTPATH/plugins
 ####################################################
 
 if [ -f "$COREPATH/common" ]; then
-	source $COREPATH/common
+  source $COREPATH/common
 else
 	echo "ERROR" "Missing core file \"Common\" please reinstall eiger to resolve. Exiting..."
 	exit 1
@@ -93,14 +93,14 @@ esac
 for PLUGIN in "${PLUGINS[@]}"
 do
 	# Loop through all the commands the plugin has
-	for c in $(eval echo "$"${PLUGIN}_COMMAND)
+	for c in $(eval echo "$"${PLUGIN}_PLUGIN_COMMAND)
 	do
 		# Check if the command matches
 		if [ $c = $1 ]; then
 			debug "Running $PLUGIN, command ${@}"
 			
 			# Run the function
-			$(eval echo "$"${PLUGIN}_FUNCTION) $@
+			$(eval echo "$"${PLUGIN}_PLUGIN_FUNCTION) $@
 			exit 1
 		fi
 	done
