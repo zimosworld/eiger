@@ -97,8 +97,8 @@ function apacheContainer {
       renderTemplate $DOCKER_TEMPALTE_FOLDER/apache-config.conf > $CONTAINER_FOLDER/app/apache-config.conf
       debug "app/apache-config.conf created"
 
-      read -p "Image name [hub.4mation.com.au/client/app-name]: " HUB_IMAGE_URL
-      HUB_IMAGE_URL="${HUB_IMAGE_URL:-hub.4mation.com.au/client/app-name}"
+      read -p "Image name [php:latest]: " HUB_IMAGE_URL
+      HUB_IMAGE_URL="${HUB_IMAGE_URL:-php:latest}"
       renderTemplate $DOCKER_TEMPALTE_FOLDER/build-docker-compose.yml > $CONTAINER_FOLDER/app/docker-compose.yml
       debug "app/docker-compose.yml created"
 
