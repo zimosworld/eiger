@@ -3,10 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-VERSION_VERSION=1.0.0
-VERSION_COMMAND="version"
-VERSION_FUNCTION="versionRun"
-VERSION_HELP="versionHelp"
+VERSION_PLUGIN_VERSION=1.1.0
+VERSION_PLUGIN_COMMAND="version"
+VERSION_PLUGIN_FUNCTION="versionRun"
+VERSION_PLUGIN_HELP="versionHelp"
 
 function versionRun {
 	message "INFO" "Eiger version: $VERSION"
@@ -14,5 +14,5 @@ function versionRun {
 
 # Function for output top level help
 function versionHelp {
-	printf "   version\t\tOutput version of eiger."
+	printf "  version\t\tOutput version of eiger."
 }

@@ -3,9 +3,9 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-UPDATE_VERSION=1.0.0
-UPDATE_COMMAND="update self-update"
-UPDATE_FUNCTION="runUpdate"
+UPDATE_PLUGIN_VERSION=1.1.0
+UPDATE_PLUGIN_COMMAND="update self-update"
+UPDATE_PLUGIN_FUNCTION="runUpdate"
 
 
 function runUpdate {

@@ -3,10 +3,11 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-NODE_VERSION=1.0.0
-NODE_COMMAND="npm yarn"
-NODE_FUNCTION="nodeRun"
-NODE_HELP="nodeHelp"
+NODE_PLUGIN_VERSION=1.1.0
+NODE_PLUGIN_COMMAND="npm yarn"
+NODE_PLUGIN_FUNCTION="nodeRun"
+NODE_PLUGIN_HELP="nodeHelp"
+NODE_PLUGIN_INIT="nodeInit"
 
 # Default configs
 NODE_ENABLED=true
@@ -20,7 +21,7 @@ function nodeRun {
 		message "ERROR" "Node (NPM/YARN) is disabled on this project."
 	fi
 	
-	NODE_FULL_PATH=$(pwd)$NPM_PATH
+	local NODE_FULL_PATH=$(pwd)$NPM_PATH
 	
 	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$NODE_FULL_PATH:/usr/src/app --workdir $PATH_PREFIX/usr/src/app node:$NODE_VERSION $@
 	debug "Finished running npm/yarn"
@@ -28,5 +29,27 @@ function nodeRun {
 
 # Function for output top level help
 function nodeHelp {
-	printf "   npm\t\t\tRun npm.\n   yarn\t\t\tRun yarn."
+	printf "  npm\t\t\tRun npm.\n  yarn\t\t\tRun yarn."
+}
+
+# Init - Eiger project config setup (Creates a .eiger config file for project)
+function nodeInit {
+
+	local INIT_NODE_ENABLED=false
+	local INIT_NODE_PATH=
+	local INIT_NODE_VERSION=
+	
+	if ask "Enabled Node (NPM/YARN)?" N; then
+		INIT_NODE_ENABLED=true
+		
+		read -p "Relative path to package.json file? [/]): " UI_NODE_PATH
+		INIT_NODE_PATH=${UI_NODE_PATH:-/}
+		
+		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_NODE_VERSION
+		INIT_NODE_VERSION=${UI_NODE_VERSION:-9.11.1}
+	fi
+	
+	echo "NODE_ENABLED=$INIT_NODE_ENABLED
+NPM_PATH=$INIT_NODE_PATH
+NODE_VERSION=$INIT_NODE_VERSION"
 }
