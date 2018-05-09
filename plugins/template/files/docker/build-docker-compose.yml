@@ -1,0 +1,5 @@
+version: '2'
+services:
+  website:
+    build: .
+    image: {$HUB_IMAGE_URL}

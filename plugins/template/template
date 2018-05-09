@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+TEMPLATE_VERSION=1.0.0
+TEMPLATE_COMMAND="template"
+TEMPLATE_FUNCTION="templateRun"
+TEMPLATE_HELP="templateHelp"
+
+# Default configs
+TEMPLATE_ENABLED=true
+TEMPLATE_PATH=./
+TEMPLATE_VERSION=latest
+
+# Globals
+ENVIRONMENT_FOLDER=$TEMPLATE_PATH/enviornment;
+CONTAINER_FOLDER=$ENVIRONMENT_FOLDER/continers;
+VOLUME_FOLDER=$ENVIRONMENT_FOLDER/volumes;
+PLUGIN_FOLDER=./plugins/template/files
+DOCKER_TEMPALTE_FOLDER=$PLUGIN_FOLDER/docker
+
+TEMPLATE_APP_NAME=
+TEMPLATE_DB_LINK=
+TEMPLATE_DOCKER_COMPOSE_CONTENT=$(cat $DOCKER_TEMPALTE_FOLDER/boilerplate-docker-compose.yml)
+
+# Run Node command inside docker container
+function templateRun {
+
+	if ! [ TEMPLATE_ENABLED ]; then
+		message "ERROR" "Templates are disabled on this project."
+	fi
+
+
+ case $2 in
+  readme)
+   debug "Not implemented"
+   ;;
+  docker)
+   debug "Creating Docker Environment files/folders"
+   createDocker
+   ;;
+  *)
+   message "ERROR" "Invalid template type, see 'eiger help template' for more details "
+   ;;
+ esac
+
+}
+
+# Function for output top level help
+function templateHelp {
+	printf "   template (docker) \t\tCreate files in this directory based on a template"
+}
+
+renderTemplate() {
+  eval "echo \"$(cat $1)\""
+}
+
+function renderTemplateFromVar {
+  eval "echo \"$1\""
+}
+
+# Create folders and files for development docker environment
+function createDocker {
+
+  #setup the directories
+  if ! mkdir -p $ENVIRONMENT_FOLDER; then
+     message "ERROR" "There was an error making a directory ($ENVIRONMENT_FOLDER). Exiting..."
+     exit 1
+  fi
+  if ! mkdir -p $CONTAINER_FOLDER; then
+     message "ERROR" "There was an error making a directory ($CONTAINER_FOLDER). Exiting..."
+     exit 1
+  fi
+  if ! mkdir -p $VOLUME_FOLDER; then
+     message "ERROR" "There was an error making a directory ($VOLUME_FOLDER). Exiting..."
+     exit 1
+  fi
+
+  read -p "What is your applications name [app]: " TEMPLATE_APP_NAME
+
+  apacheContainer
+  databaseContainer
+  renderTemplateFromVar "$TEMPLATE_DOCKER_COMPOSE_CONTENT" > $TEMPLATE_PATH/docker-compose.yml
+}
+
+function apacheContainer {
+
+  if ask "Create an apache(php7) container? " Y; then
+      if ! mkdir -p $CONTAINER_FOLDER/app; then
+         message "ERROR" "There was an error making a directory ($CONTAINER_FOLDER/app). Exiting..."
+         exit 1
+      fi
+
+      read -p "What is the ServerName? [local.example.com]: " SERVER_NAME
+      SERVER_NAME=${SERVER_NAME:-local.example.com}
+      renderTemplate $DOCKER_TEMPALTE_FOLDER/apache-config.conf > $CONTAINER_FOLDER/app/apache-config.conf
+      debug "app/apache-config.conf created"
+
+      read -p "Image name [hub.4mation.com.au/client/app-name]: " HUB_IMAGE_URL
+      HUB_IMAGE_URL="${HUB_IMAGE_URL:-hub.4mation.com.au/client/app-name}"
+      renderTemplate $DOCKER_TEMPALTE_FOLDER/build-docker-compose.yml > $CONTAINER_FOLDER/app/docker-compose.yml
+      debug "app/docker-compose.yml created"
+
+      cat $DOCKER_TEMPALTE_FOLDER/Dockerfile > $CONTAINER_FOLDER/app/Dockerfile
+      debug "app/Dockerfile created"
+
+      APP_NAME=${TEMPLATE_APP_NAME:-app}
+      TEMPLATE_DB_LINK="$(cat $DOCKER_TEMPALTE_FOLDER/link-docker-compose.yml )"
+      TEMPLATE_DOCKER_COMPOSE_CONTENT+="$(renderTemplate $DOCKER_TEMPALTE_FOLDER/dev-docker-compose.yml)"
+
+  fi
+
+}
+
+function databaseContainer {
+   if ask "Create a mysql container? " Y; then
+
+      APP_NAME=${TEMPLATE_APP_NAME:-app}
+      TEMPLATE_DOCKER_COMPOSE_CONTENT+="$(renderTemplate $DOCKER_TEMPALTE_FOLDER/db-docker-compose.yml)"
+
+      if ! mkdir -p $VOLUME_FOLDER/db; then
+          message "ERROR" "There was an error making a directory ($VOLUME_FOLDER/db). Exiting..."
+          exit 1
+      fi
+
+      cp $DOCKER_TEMPALTE_FOLDER/gitignore-everything $VOLUME_FOLDER/db/.gitignore
+   fi
+}

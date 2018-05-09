@@ -6,3 +6,4 @@ plugins/*
 !plugins/dockerenv
 !plugins/init
 !plugins/node
+!plugins/template
