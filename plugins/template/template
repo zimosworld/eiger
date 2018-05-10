@@ -3,10 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-TEMPLATE_VERSION=1.0.0
-TEMPLATE_COMMAND="template"
-TEMPLATE_FUNCTION="templateRun"
-TEMPLATE_HELP="templateHelp"
+TEMPLATE_PLUGIN_VERSION=1.0.0
+TEMPLATE_PLUGIN_COMMAND="template"
+TEMPLATE_PLUGIN_FUNCTION="templateRun"
+TEMPLATE_PLUGIN_HELP="templateHelp"
 
 # Default configs
 TEMPLATE_ENABLED=true
