@@ -17,7 +17,7 @@ TEMPLATE_VERSION=latest
 ENVIRONMENT_FOLDER=$TEMPLATE_PATH/enviornment;
 CONTAINER_FOLDER=$ENVIRONMENT_FOLDER/continers;
 VOLUME_FOLDER=$ENVIRONMENT_FOLDER/volumes;
-PLUGIN_FOLDER=./plugins/template/files
+PLUGIN_FOLDER=$PLUGINPATH/template/files
 DOCKER_TEMPALTE_FOLDER=$PLUGIN_FOLDER/docker
 
 TEMPLATE_APP_NAME=
@@ -49,7 +49,7 @@ function templateRun {
 
 # Function for output top level help
 function templateHelp {
-	printf "   template (docker) \t\tCreate files in this directory based on a template"
+	printf "  template (docker) \tCreate files in this directory based on a template"
 }
 
 renderTemplate() {
