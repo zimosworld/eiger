@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-PLUGIN_PLUGIN_VERSION=1.0.0
+PLUGIN_PLUGIN_VERSION=1.1.0
 PLUGIN_PLUGIN_COMMAND="plugin"
 PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"
 PLUGIN_PLUGIN_HELP="pluginHelp"
@@ -22,10 +22,52 @@ function pluginEntryPoint {
       pluginVersion $3
       ;;
     install)
-      echo "Not implemented"
+      pluginInstall $3 $4
       ;;
 	esac
 
+}
+
+# Install plugin
+function pluginInstall {
+
+  if [ -z "$1" ]; then
+    message "ERROR" "Please pass in plugin name."
+  fi
+
+  if [ -z "$2" ]; then
+    message "ERROR" "Please pass in plugin repo."
+  fi
+
+  local PLUGINNAME=$1
+  local PLUGINREPO=$2
+  local PLUGINROOT=$PLUGINPATH/$PLUGINNAME
+
+  if [ -d "$PLUGINROOT" ]; then
+    message "ERROR" "Plugin already installed"
+  fi
+
+  mkdir $PLUGINROOT
+
+  if ! [ -d "$PLUGINROOT" ]; then
+    message "ERROR" "There was an error creating the new plugin directory."
+  fi
+
+  cd $PLUGINROOT
+
+  git clone $PLUGINREPO .
+
+  if ! [ -d ".git" ]; then
+    rm -rf $PLUGINROOT
+		message "ERROR" "There was an issue installing the plugin."
+	fi
+
+	if ! [ -f "$PLUGINNAME" ]; then
+	  rm -rf $PLUGINROOT
+		message "ERROR" "There was an issue installing the plugin."
+	fi
+
+  message "INFO" "Plugin installed successfully."
 }
 
 # Run logic to update
