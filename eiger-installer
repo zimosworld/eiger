@@ -61,6 +61,8 @@ function runInstaller {
 alias eiger='bash $INSTALL_PATH/eiger'
 alias eiger-update='bash $INSTALL_PATH/eiger-update'" >> ~/.bashrc; then
 
+            source ~/.bashrc
+
             message "INFO" "Alias added successfully, installation completed."
         else
             message "ERROR" "There was an error adding Alias. Exiting..."

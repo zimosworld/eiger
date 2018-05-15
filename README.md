@@ -11,7 +11,9 @@ curl -s https://raw.githubusercontent.com/zimosworld/eiger/master/eiger-installe
 
 ## Usage
 
-#### Help (List available commands)
+#### Help
+
+List available commands
 
 ```
 eiger help
@@ -19,21 +21,24 @@ eiger help
 
 #### Initialize eiger on a project. 
 
-This creates a .eiger file where the command is run that hold project specific configs. You add this file to source control.
+Creates a `.eiger` file project specific configs are saved for use with eiger commands (e.g composer). You add this file to source control.
+
 ```
 eiger init
 ```
 
 #### Create a docker environment file
 
-This creates a .docker.env file that hold local setting specific to that machine. DO NOT add this file to source control.
+Creates a `.docker.env` file that hold local setting specific to the local machine. DO NOT add this file to source control.
 
-This is used with containers created from https://github.com/zimosworld/php-dev
+This is used with docker containers based off from https://github.com/zimosworld/php-dev
 ```
 eiger dei
 ```
 
 #### Update
+
+Command to update eiger
 
 ```
 eiger-update
