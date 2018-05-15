@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-COMPOSER_PLUGIN_VERSION=1.1.0
+COMPOSER_PLUGIN_VERSION=1.2.0
 COMPOSER_PLUGIN_COMMAND="composer"
 COMPOSER_PLUGIN_FUNCTION="composerRun"
 COMPOSER_PLUGIN_HELP="composerHelp"
@@ -13,6 +13,7 @@ COMPOSER_PLUGIN_INIT="composerInit"
 COMPOSER_ENABLED=true
 COMPOSER_PATH=/
 COMPOSER_VERSION=latest
+COMPOSER_IPR=false
 
 # Run Composer command inside docker container
 function composerRun {
@@ -21,9 +22,14 @@ function composerRun {
 		message "ERROR" "Composer is disabled on this project."
 	fi
 	
-	local COMPOSE_FULL_PATH=$(pwd)$COMPOSER_PATH
+	local COMPOSER_FULL_PATH=$(pwd)$COMPOSER_PATH
+	local COMPOSER_IPR_VALUE=""
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$COMPOSE_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@
+	if [ $COMPOSER_IPR = true ]; then
+	  COMPOSER_IPR_VALUE="--ignore-platform-reqs"
+	fi
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$COMPOSER_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@ $COMPOSER_IPR_VALUE
 	debug "Finished running composer"
 }
 
