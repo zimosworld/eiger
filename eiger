@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=2.2.0
+VERSION=2.3.0
 
 SSHKEYPATH=$HOME/.ssh
 SCRIPT=$(readlink -f "$0")
@@ -88,6 +88,11 @@ case "${unameOut}" in
 		message "ERROR" "Unknown machine type ${unameOut}."
 		;;
 esac
+
+if [ -z ${1} ]; then
+    message "INFO" "No command found, run 'eiger help' for a list of commands."
+    exit 1
+fi
 
 # Loop through each plugin to search if one has the command being run
 for PLUGIN in "${PLUGINS[@]}"
