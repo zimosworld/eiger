@@ -4,7 +4,13 @@ DEBUG=false
 VERSION=2.3.0
 
 SSHKEYPATH=$HOME/.ssh
-SCRIPT=$(readlink -f "$0")
+
+if [ "$(uname -s)" = 'Darwin' ]; then
+  SCRIPT=$(readlink "$0")
+else
+  SCRIPT=$(readlink -f "$0")
+fi
+
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 COREPATH=$SCRIPTPATH/core
@@ -70,13 +76,17 @@ unameOut="$(uname -s)"
 debug "Machine type ${unameOut}"
 
 case "${unameOut}" in
-    Linux*|Darwin*)     
+    Linux*)
 		debug "Defining variables for linux."
 		OS_TYPE=Linux
 		;;
-    CYGWIN*|MINGW*)    
+		Darwin*)
+		debug "Defining variables for mac."
+		OS_TYPE=Linux
+		;;
+    CYGWIN*|MINGW*)
 		debug "Defining variables for windows."
-		
+
 		OS_TYPE=Windows
 		USER="www-data"
 		GROUP="www-data"
@@ -84,7 +94,7 @@ case "${unameOut}" in
 		PATH_PREFIX=/
 		RUN_AS=
 		;;
-    *)          
+    *)
 		message "ERROR" "Unknown machine type ${unameOut}."
 		;;
 esac
