@@ -21,7 +21,7 @@ Commands:"
 	for PLUGIN in "${PLUGINS[@]}"
 	do
 	  # If the plugin variable help variable exist and the value is the name of a function run the function
-		if [[ -v ${PLUGIN}_PLUGIN_HELP ]] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
+		if [ -v ${PLUGIN}_PLUGIN_HELP ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
 			$(eval echo "$"${PLUGIN}_PLUGIN_HELP)
 			printf "\n"
 		fi

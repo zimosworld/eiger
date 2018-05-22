@@ -21,7 +21,7 @@ function initRun {
 	for PLUGIN in "${PLUGINS[@]}"
 	do
 	  # If the plugin has a init variable and its value is the name of a function
-		if [[ -v ${PLUGIN}_PLUGIN_INIT ]] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_INIT) > /dev/null; then
+		if [ -v ${PLUGIN}_PLUGIN_INIT ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_INIT) > /dev/null; then
 		  # Get plugin command
 			COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_INIT)
 

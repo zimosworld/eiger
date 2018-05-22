@@ -105,7 +105,7 @@ function pluginVersion {
   local PLUGINNAME=$1
   local PLUGINNAMEUPPER=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
 
-  if [[ -v ${PLUGINNAMEUPPER}_PLUGIN_VERSION ]]; then
+  if [ -v ${PLUGINNAMEUPPER}_PLUGIN_VERSION ]; then
     message "INFO" "Plugin $PLUGINNAME version: $(eval echo "$"${PLUGINNAMEUPPER}_PLUGIN_VERSION)"
   else
     message "ERROR" "Could not find plugin $PLUGINNAME version."

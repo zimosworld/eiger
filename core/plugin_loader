@@ -7,8 +7,12 @@
 I=0
 PLUGINS=()
 
-for PLUGINNAME in $(find "$COREPLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+for PLUGINNAME in $(find "$COREPLUGINPATH" -maxdepth 1 -mindepth 1 -type d);
 do
+  FINDPATH=$COREPLUGINPATH/
+
+  PLUGINNAME=${PLUGINNAME//$FINDPATH/}
+
 	if [ -f "$COREPLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
 		source "$COREPLUGINPATH/$PLUGINNAME/$PLUGINNAME"
 		
@@ -27,8 +31,12 @@ debug "Core Plugins loaded"
 # Load Plugins
 ####################################################
 
-for PLUGINNAME in $(find "$PLUGINPATH" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+for PLUGINNAME in $(find "$PLUGINPATH" -maxdepth 1 -mindepth 1 -type d)
 do
+  FINDPATH=$PLUGINPATH/
+
+  PLUGINNAME=${PLUGINNAME//$FINDPATH/}
+
 	if [ -f "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME" ]; then
 		source "$PLUGINPATH/$PLUGINNAME/$PLUGINNAME"
 		
