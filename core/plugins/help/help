@@ -3,13 +3,13 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-HELP_PLUGIN_VERSION=1.1.0
+HELP_PLUGIN_VERSION=1.2.0
 HELP_PLUGIN_COMMAND="help -h --help"
 HELP_PLUGIN_FUNCTION="helpRun"
 
 # Echo help content
 function helpRun {
-	
+
 	echo "
 Usage: eiger [COMMAND] [ARG...]
 	
@@ -21,7 +21,8 @@ Commands:"
 	for PLUGIN in "${PLUGINS[@]}"
 	do
 	  # If the plugin variable help variable exist and the value is the name of a function run the function
-		if [ -v ${PLUGIN}_PLUGIN_HELP ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
+	  FUNCTIONNAME=${PLUGIN}_PLUGIN_HELP
+		if [ ! -z $(eval echo "$"$FUNCTIONNAME) ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
 			$(eval echo "$"${PLUGIN}_PLUGIN_HELP)
 			printf "\n"
 		fi

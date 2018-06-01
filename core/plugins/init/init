@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-INIT_PLUGIN_VERSION=1.1.0
+INIT_PLUGIN_VERSION=1.2.0
 INIT_PLUGIN_COMMAND="init"
 INIT_PLUGIN_FUNCTION="initRun"
 INIT_PLUGIN_HELP="initHelp"
@@ -21,7 +21,8 @@ function initRun {
 	for PLUGIN in "${PLUGINS[@]}"
 	do
 	  # If the plugin has a init variable and its value is the name of a function
-		if [ -v ${PLUGIN}_PLUGIN_INIT ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_INIT) > /dev/null; then
+	  FUNCTIONNAME=${PLUGIN}_PLUGIN_INIT
+		if [ ! -z $(eval echo "$"$FUNCTIONNAME) ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_INIT) > /dev/null; then
 		  # Get plugin command
 			COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_INIT)
 

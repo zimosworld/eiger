@@ -1,17 +1,16 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=2.3.0
+VERSION=2.4.0
 
 SSHKEYPATH=$HOME/.ssh
 
 if [ "$(uname -s)" = 'Darwin' ]; then
-  SCRIPT=$(readlink "$0")
+  SCRIPTPATH=$(dirname "$0")
 else
   SCRIPT=$(readlink -f "$0")
+  SCRIPTPATH=$(dirname "$SCRIPT")
 fi
-
-SCRIPTPATH=$(dirname "$SCRIPT")
 
 COREPATH=$SCRIPTPATH/core
 COREPLUGINPATH=$COREPATH/plugins

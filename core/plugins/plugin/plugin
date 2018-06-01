@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-PLUGIN_PLUGIN_VERSION=1.1.0
+PLUGIN_PLUGIN_VERSION=1.2.0
 PLUGIN_PLUGIN_COMMAND="plugin"
 PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"
 PLUGIN_PLUGIN_HELP="pluginHelp"
@@ -105,7 +105,7 @@ function pluginVersion {
   local PLUGINNAME=$1
   local PLUGINNAMEUPPER=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
 
-  if [ -v ${PLUGINNAMEUPPER}_PLUGIN_VERSION ]; then
+  if [ ! -z $(eval echo ${PLUGINNAMEUPPER}_PLUGIN_VERSION) ]; then
     message "INFO" "Plugin $PLUGINNAME version: $(eval echo "$"${PLUGINNAMEUPPER}_PLUGIN_VERSION)"
   else
     message "ERROR" "Could not find plugin $PLUGINNAME version."
