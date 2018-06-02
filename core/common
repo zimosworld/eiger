@@ -72,3 +72,33 @@ function ask {
 
     done
 }
+
+# Create global editable config file with default settings
+function createConfig {
+
+  if [ -f "$SCRIPTPATH/eiger.config" ]; then
+    return
+  fi
+
+  debug "Creating eiger.config file."
+
+  local CONFIGCONTENT="DEBUG=false"
+
+  printf "$CONFIGCONTENT" > "$SCRIPTPATH/eiger.config"
+}
+
+# Load global config file
+function loadConfig {
+
+  if [ -f $SCRIPTPATH/eiger.config ]; then
+    source $SCRIPTPATH/eiger.config
+  else
+    debug "Missing eiger.config file."
+
+    createConfig
+
+    if [ -f $SCRIPTPATH/eiger.config ]; then
+      source $SCRIPTPATH/eiger.config
+    fi
+  fi
+}

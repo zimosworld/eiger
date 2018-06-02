@@ -1,10 +1,5 @@
 #!/bin/bash
 
-DEBUG=false
-VERSION=2.4.0
-
-SSHKEYPATH=$HOME/.ssh
-
 if [ "$(uname -s)" = 'Darwin' ]; then
   SCRIPTPATH=$(dirname "$0")
 else
@@ -13,111 +8,14 @@ else
 fi
 
 COREPATH=$SCRIPTPATH/core
-COREPLUGINPATH=$COREPATH/plugins
-PLUGINPATH=$SCRIPTPATH/plugins
 
 ####################################################
 # Functions
 ####################################################
 
-if [ -f "$COREPATH/common" ]; then
-  source $COREPATH/common
+if [ -f "$COREPATH/core" ]; then
+  source $COREPATH/core
 else
-	echo "ERROR" "Missing core file \"Common\" please reinstall eiger to resolve. Exiting..."
+  echo "ERROR" "Missing core file \"core\" please reinstall eiger to resolve. Exiting..."
 	exit 1
 fi
-
-debug "Core functions loaded"
-
-####################################################
-# Plugin Loader
-####################################################
-
-if [ -f "$COREPATH/plugin_loader" ]; then
-	source $COREPATH/plugin_loader
-else
-	message "ERROR" "Missing core file \"Plugin Loader\" please reinstall eiger to resolve."
-fi
-
-####################################################
-# Load Project Configs
-####################################################
-
-if [ -f "$(pwd)/.eiger" ]; then
-	source $(pwd)/.eiger
-else
-	message "WARNING" "No config found, using defaults."
-fi
-
-####################################################
-# Setting OS Default Configs
-####################################################
-
-PATH_PREFIX=
-COMMAND_PREFIX=
-USER=$(id -u)
-GROUP=$(id -g)
-RUN_AS="--user $USER:$GROUP"
-
-####################################################
-# Main Entry Point
-####################################################
-
-checkCommands
-
-# Linux* = Linux
-# Darwin* = Mac
-# CYGWIN* = Cygwin (Windows)
-# MINGW* = MinGw (Windows)
-
-unameOut="$(uname -s)"
-
-debug "Machine type ${unameOut}"
-
-case "${unameOut}" in
-    Linux*)
-		debug "Defining variables for linux."
-		OS_TYPE=Linux
-		;;
-		Darwin*)
-		debug "Defining variables for mac."
-		OS_TYPE=Linux
-		;;
-    CYGWIN*|MINGW*)
-		debug "Defining variables for windows."
-
-		OS_TYPE=Windows
-		USER="www-data"
-		GROUP="www-data"
-		COMMAND_PREFIX="winpty"
-		PATH_PREFIX=/
-		RUN_AS=
-		;;
-    *)
-		message "ERROR" "Unknown machine type ${unameOut}."
-		;;
-esac
-
-if [ -z ${1} ]; then
-    message "INFO" "No command found, run 'eiger help' for a list of commands."
-    exit 1
-fi
-
-# Loop through each plugin to search if one has the command being run
-for PLUGIN in "${PLUGINS[@]}"
-do
-	# Loop through all the commands the plugin has
-	for c in $(eval echo "$"${PLUGIN}_PLUGIN_COMMAND)
-	do
-		# Check if the command matches
-		if [ $c = $1 ]; then
-			debug "Running $PLUGIN, command ${@}"
-			
-			# Run the function
-			$(eval echo "$"${PLUGIN}_PLUGIN_FUNCTION) $@
-			exit 1
-		fi
-	done
-done
-
-message "ERROR" "Command not found."

@@ -14,8 +14,8 @@ TEMPLATE_PATH=./
 TEMPLATE_VERSION=latest
 
 # Globals
-ENVIRONMENT_FOLDER=$TEMPLATE_PATH/enviornment;
-CONTAINER_FOLDER=$ENVIRONMENT_FOLDER/continers;
+ENVIRONMENT_FOLDER=$TEMPLATE_PATH/environment;
+CONTAINER_FOLDER=$ENVIRONMENT_FOLDER/containers;
 VOLUME_FOLDER=$ENVIRONMENT_FOLDER/volumes;
 PLUGIN_FOLDER=$PLUGINPATH/template/files
 DOCKER_TEMPALTE_FOLDER=$PLUGIN_FOLDER/docker
@@ -34,15 +34,18 @@ function templateRun {
 
  case $2 in
   readme)
-   debug "Not implemented"
-   ;;
+    debug "Not implemented"
+    ;;
   docker)
-   debug "Creating Docker Environment files/folders"
-   createDocker
-   ;;
+    debug "Creating Docker Environment files/folders"
+    createDocker
+    ;;
+  help)
+    templatePluginHelp
+    ;;
   *)
-   message "ERROR" "Invalid template type, see 'eiger help template' for more details "
-   ;;
+    message "ERROR" "Invalid template type, run 'eiger template help' for more details"
+    ;;
  esac
 
 }
@@ -50,6 +53,13 @@ function templateRun {
 # Function for output top level help
 function templateHelp {
 	printf "  template (docker) \tCreate files in this directory based on a template"
+}
+
+function templatePluginHelp {
+  printf "\nUsage: eiger template [COMMAND]\n\nRun template commands.\n\n"
+
+  printf "Commands:\n\n"
+  printf "  docker\t\tSetup docker template.\n"
 }
 
 renderTemplate() {

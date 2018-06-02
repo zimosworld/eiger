@@ -1,6 +1,7 @@
 .idea/*
 .docker.env
 plugins/*
+eiger.config
 
 !plugins/composer
 !plugins/dockerenv

@@ -3,11 +3,36 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-UPDATE_PLUGIN_VERSION=1.1.0
+UPDATE_PLUGIN_VERSION=1.2.0
 UPDATE_PLUGIN_COMMAND="update self-update"
 UPDATE_PLUGIN_FUNCTION="runUpdate"
+UPDATE_PLUGIN_HELP="updateHelp"
 
+UPDATE_PLUGIN_BRANCH="master"
 
 function runUpdate {
-	message "INFO" "Please run `eiger-update` to update eiger."
+  cd "$SCRIPTPATH"
+
+	if ! [ -d "$SCRIPTPATH/.git" ]; then
+		message "ERROR" "Missing git directory, please install eiger with the installer script. Exiting..."
+		exit 1
+	fi
+
+	debug "Checking setup as repo complete"
+
+  git fetch origin &> /dev/null
+
+  if [ "$(git rev-parse origin/master)" != "$(git rev-parse HEAD)" ]; then
+      message "INFO" "New version found, updating..."
+      git pull origin master --force
+      message "INFO" "Running new version..."
+      exit 1
+  fi
+
+  message "INFO" "Already on the latest version."
+}
+
+# Function for output top level help
+function updateHelp {
+	printf "  update\t\tUpdate Eiger."
 }

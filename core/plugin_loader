@@ -19,13 +19,13 @@ do
 		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
 	
 		I=$I+1
-		debug "Plugin $PLUGINNAME loaded"
+		debug "Core Plugin \"$PLUGINNAME\" loaded."
 	else 
-		debug "$PLUGINNAME is not a valid plugin, Skipping.."
+		debug "\"$PLUGINNAME\" is not a valid plugin, Skipping.."
 	fi
 done
 
-debug "Core Plugins loaded"
+debug "Completed loading Core Plugins."
 
 ####################################################
 # Load Plugins
@@ -43,10 +43,10 @@ do
 		PLUGINS[$I]=$(echo $PLUGINNAME | tr /a-z/ /A-Z/)
 	
 		I=$I+1
-		debug "Plugin $PLUGINNAME loaded"
+		debug "Plugin \"$PLUGINNAME\" loaded."
 	else 
-		debug "$PLUGINNAME is not a valid plugin, Skipping.."
+		debug "\"$PLUGINNAME\" is not a valid plugin, Skipping.."
 	fi
 done
 
-debug "Plugins loaded"
+debug "Completed loading Plugins."

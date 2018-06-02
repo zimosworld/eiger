@@ -5,12 +5,10 @@
     volumes:
       - .:/var/www/html
     ${TEMPLATE_DB_LINK}
-    environment:
-      - VIRTUAL_HOST=${SERVER_NAME}
-      - VIRTUAL_PORT=80
-      - VIRTUAL_PROTO=http
-      - HTTPS_METHOD=redirect
+    labels:
+      - "traefik.frontend.rule=Host:${SERVER_NAME}"
+      - "traefik.port=80"
     extra_hosts:
-     - "${SERVER_NAME}:127.0.0.1"
+      - "${SERVER_NAME}:127.0.0.1"
     network_mode: "bridge"
 
