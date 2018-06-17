@@ -1,0 +1,14 @@
+  ${DOCKER_APACHE_APP_NAME}:
+    image: ${DOCKER_HUB_IMAGE_URL}
+    container_name: ${DOCKER_APACHE_APP_NAME}
+    volumes:
+      - .:/var/www/html
+      - ./logs/app:/var/log/httpd
+    ${TEMPLATE_DB_LINK}
+    labels:
+      - "traefik.frontend.rule=Host:${DOCKER_APACHE_SERVER_NAME}"
+      - "traefik.port=80"
+    extra_hosts:
+      - "${DOCKER_APACHE_SERVER_NAME}:127.0.0.1"
+    network_mode: "bridge"
+

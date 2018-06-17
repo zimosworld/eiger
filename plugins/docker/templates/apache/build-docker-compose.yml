@@ -1,0 +1,5 @@
+version: '2'
+services:
+  website:
+    build: .
+    image: $DOCKER_HUB_IMAGE_URL

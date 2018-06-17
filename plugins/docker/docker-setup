@@ -1,0 +1,133 @@
+#!/bin/bash
+
+DOCKER_ENVIRONMENT_FOLDER=$DOCKER_TEMPLATE_PATH/environment;
+DOCKER_CONTAINER_FOLDER=$DOCKER_ENVIRONMENT_FOLDER/containers;
+DOCKER_VOLUME_FOLDER=$DOCKER_ENVIRONMENT_FOLDER/volumes;
+
+DOCKER_TEMPLATE_FOLDER=$PLUGINPATH/docker/templates
+DOCKER_TEMPLATE_GENERAL_FOLDER=$DOCKER_TEMPLATE_FOLDER/general
+DOCKER_TEMPLATE_APACHE_FOLDER=$DOCKER_TEMPLATE_FOLDER/apache
+
+# Main setup command entry point
+function dockerSetupContainer {
+
+  dockerCreateBaseFolders
+  dockerCreateBaseComposeFile
+
+  local CONTAINER_TYPES=("Apache" "Apache+PHP");
+
+  echo "Container type available: "
+  PS3="Please enter the number selection of the container you would like to setup:"
+  select SELECTION in ${CONTAINER_TYPES[@]} exit; do
+    case $SELECTION in
+      Apache)
+        dockerApacheContainer false
+        break
+      ;;
+      Apache+PHP)
+        dockerApacheContainer true
+        break
+      ;;
+      MariaDB)
+        dockerMariaDBContainer
+        break
+      ;;
+      exit)
+        exit 1
+      ;;
+    esac
+  done
+
+}
+
+# Create base folders if they don't exist
+function dockerCreateBaseFolders {
+
+  #setup the directories
+  if [ ! -d $DOCKER_ENVIRONMENT_FOLDER ] && ! mkdir -p $DOCKER_ENVIRONMENT_FOLDER; then
+     message "ERROR" "There was an error making a directory ($DOCKER_ENVIRONMENT_FOLDER). Exiting..."
+     exit 1
+  fi
+  if [ ! -d $DOCKER_CONTAINER_FOLDER ] && ! mkdir -p $DOCKER_CONTAINER_FOLDER; then
+     message "ERROR" "There was an error making a directory ($DOCKER_CONTAINER_FOLDER). Exiting..."
+     exit 1
+  fi
+  if [ ! -d $DOCKER_VOLUME_FOLDER ] && ! mkdir -p $DOCKER_VOLUME_FOLDER; then
+     message "ERROR" "There was an error making a directory ($DOCKER_VOLUME_FOLDER). Exiting..."
+     exit 1
+  fi
+}
+
+# Create base docker-compose file if does not exist
+function dockerCreateBaseComposeFile {
+
+  if [ ! -f $DOCKER_TEMPLATE_PATH/docker-compose.yml ]; then
+      dockerRenderTemplate $DOCKER_TEMPLATE_GENERAL_FOLDER/boilerplate-docker-compose.yml > $DOCKER_TEMPLATE_PATH/docker-compose.yml
+      debug "docker-compose.yml created"
+  fi
+
+}
+
+function dockerRenderTemplate() {
+  eval "echo \"$(cat $1)\""
+}
+
+function dockerRenderTemplateFromVar {
+  eval "echo \"$1\""
+}
+
+# Config and setup apache container
+function dockerApacheContainer {
+
+  if [ $1 = false ]; then
+    DOCKER_APACHE_BASE_CONTAINER="httpd:latest"
+  else
+    local PHP_VERSIONS=("5.3" "5.4" "5.5" "5.6" "7.0" "7.1")
+
+    echo "PHP versions available: "
+    PS3="Please enter the number selection of the version of PHP you would like:"
+    select SELECTION in ${PHP_VERSIONS[@]}; do
+      if [ ! -z $SELECTION ]; then
+        DOCKER_APACHE_BASE_CONTAINER="zimosworld/php-dev:$SELECTION"
+
+        break
+      fi
+    done
+
+  fi
+
+  read -p "What is your applications name [website_app]: " TEMPLATE_APACHE_APP_NAME
+  DOCKER_APACHE_APP_NAME=${TEMPLATE_APACHE_APP_NAME:-website_app}
+
+  read -p "What is the ServerName? [local.example.com]: " TEMPLATE_APACHE_SERVER_NAME
+  DOCKER_APACHE_SERVER_NAME=${TEMPLATE_APACHE_SERVER_NAME:-local.example.com}
+
+  read -p "Path to root of website? [/]: " TEMPLATE_APACHE_ROOT_DIRECTORY
+  DOCKER_APACHE_ROOT_DIRECTORY=${TEMPLATE_APACHE_ROOT_DIRECTORY:-/}
+
+  read -p "Hub image path and name e.g zimosworld/php-dev: " TEMPLATE_HUB_IMAGE_URL
+  DOCKER_HUB_IMAGE_URL=${TEMPLATE_HUB_IMAGE_URL:-"REPLACE ME"}
+
+  #Start creation of files with values that were inputted.
+
+  if [ -d $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME ]; then
+    message "ERROR" "App folder '$DOCKER_APACHE_APP_NAME' already exists."
+  fi
+
+  if ! mkdir -p $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME; then
+    message "ERROR" "There was an error making a directory ($DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME)."
+  fi
+
+  dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/apache-config.conf > $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME/apache-config.conf
+  debug "app/apache-config.conf created"
+
+  dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/build-docker-compose.yml > $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME/docker-compose.yml
+  debug "app/docker-compose.yml created"
+
+  dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/Dockerfile > $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME/Dockerfile
+  debug "app/Dockerfile created"
+
+  dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/dev-docker-compose.yml >> $DOCKER_TEMPLATE_PATH/docker-compose.yml
+  debug "docker-compose.yml updated"
+
+}
