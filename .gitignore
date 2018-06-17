@@ -4,6 +4,7 @@ plugins/*
 eiger.config
 
 !plugins/composer
+!plugins/docker
 !plugins/dockerenv
 !plugins/init
 !plugins/node
