@@ -139,9 +139,11 @@ function dockerApacheContainer {
   dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/Dockerfile > $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME/Dockerfile
   debug "app/Dockerfile created"
 
+  dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/README.md > $DOCKER_CONTAINER_FOLDER/$DOCKER_APACHE_APP_NAME/README.md
+  debug "README.md created"
+
   dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/dev-docker-compose.yml >> $DOCKER_TEMPLATE_PATH/docker-compose.yml
   debug "docker-compose.yml updated"
-
 }
 
 # Config and setup for general container
