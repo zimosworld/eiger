@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-DOCKER_PLUGIN_VERSION=1.1.0
+DOCKER_PLUGIN_VERSION=1.2.0
 DOCKER_PLUGIN_COMMAND="docker"
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"
 DOCKER_PLUGIN_HELP="dockerHelp"
@@ -131,4 +131,5 @@ function dockerPluginHelp {
   printf "  down\t\tStop and remove docker container.\n"
   printf "  login\t\tLogin to docker container.\n"
   printf "  exec\t\tExecute command in docker container.\n"
+  printf "  setup\t\tSetup config for new docker container.\n"
 }

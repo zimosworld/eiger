@@ -8,13 +8,17 @@ DOCKER_TEMPLATE_FOLDER=$PLUGINPATH/docker/templates
 DOCKER_TEMPLATE_GENERAL_FOLDER=$DOCKER_TEMPLATE_FOLDER/general
 DOCKER_TEMPLATE_APACHE_FOLDER=$DOCKER_TEMPLATE_FOLDER/apache
 
+DOCKER_DB_MARIADB_VERSION=10.3.7
+DOCKER_DB_MYSQL_VERSION=8.0.11
+DOCKER_REDIS_VERSION=3.2.12
+
 # Main setup command entry point
 function dockerSetupContainer {
 
   dockerCreateBaseFolders
   dockerCreateBaseComposeFile
 
-  local CONTAINER_TYPES=("Apache" "Apache+PHP");
+  local CONTAINER_TYPES=("Apache" "Apache+PHP" "MariaDB" "MySQL" "Redis");
 
   echo "Container type available: "
   PS3="Please enter the number selection of the container you would like to setup:"
@@ -29,7 +33,15 @@ function dockerSetupContainer {
         break
       ;;
       MariaDB)
-        dockerMariaDBContainer
+        dockerGeneralContainer "mariadb" $DOCKER_DB_MARIADB_VERSION "website_db" $DOCKER_TEMPLATE_GENERAL_FOLDER/mysql-docker-compose.yml
+        break
+      ;;
+      MySQL)
+        dockerGeneralContainer "mysql" $DOCKER_DB_MYSQL_VERSION "website_db" $DOCKER_TEMPLATE_GENERAL_FOLDER/mysql-docker-compose.yml
+        break
+      ;;
+      Redis)
+        dockerGeneralContainer "redis" $DOCKER_REDIS_VERSION "redis" $DOCKER_TEMPLATE_GENERAL_FOLDER/redis-docker-compose.yml
         break
       ;;
       exit)
@@ -96,7 +108,7 @@ function dockerApacheContainer {
 
   fi
 
-  read -p "What is your applications name [website_app]: " TEMPLATE_APACHE_APP_NAME
+  read -p "What is your applications name? [website_app]: " TEMPLATE_APACHE_APP_NAME
   DOCKER_APACHE_APP_NAME=${TEMPLATE_APACHE_APP_NAME:-website_app}
 
   read -p "What is the ServerName? [local.example.com]: " TEMPLATE_APACHE_SERVER_NAME
@@ -129,5 +141,29 @@ function dockerApacheContainer {
 
   dockerRenderTemplate $DOCKER_TEMPLATE_APACHE_FOLDER/dev-docker-compose.yml >> $DOCKER_TEMPLATE_PATH/docker-compose.yml
   debug "docker-compose.yml updated"
+
+}
+
+# Config and setup for general container
+function dockerGeneralContainer {
+
+  read -p "What version of \"$1\" would you like? See https://hub.docker.com/_/$1/ for available versions [$2]: " TEMPLATE_GENERAL_APP_VERSION
+  DOCKER_GENERAL_IMAGE_URL=$1:${TEMPLATE_GENERAL_APP_VERSION:-$2}
+
+  read -p "What is your applications name? [$3]: " TEMPLATE_GENERAL_APP_NAME
+  DOCKER_GENERAL_APP_NAME=${TEMPLATE_GENERAL_APP_NAME:-$3}
+
+  if [ -d $DOCKER_VOLUME_FOLDER/$DOCKER_GENERAL_APP_NAME ]; then
+    message "ERROR" "Volume folder '$DOCKER_GENERAL_APP_NAME' already exists."
+  fi
+
+  if ! mkdir -p $DOCKER_VOLUME_FOLDER/$DOCKER_GENERAL_APP_NAME; then
+    message "ERROR" "There was an error making a directory ($DOCKER_VOLUME_FOLDER/$DOCKER_GENERAL_APP_NAME)."
+  fi
+
+  dockerRenderTemplate $4 >> $DOCKER_TEMPLATE_PATH/docker-compose.yml
+  debug "docker-compose.yml updated"
+
+  cp $DOCKER_TEMPLATE_GENERAL_FOLDER/gitignore-everything $DOCKER_VOLUME_FOLDER/$DOCKER_GENERAL_APP_NAME/.gitignore
 
 }

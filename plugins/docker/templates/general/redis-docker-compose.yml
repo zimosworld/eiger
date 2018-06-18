@@ -1,0 +1,6 @@
+  ${DOCKER_GENERAL_APP_NAME}:
+    image: ${DOCKER_GENERAL_IMAGE_URL}
+    container_name: ${DOCKER_GENERAL_APP_NAME}
+    volumes:
+      - ./environment/volumes/${DOCKER_GENERAL_APP_NAME}/data:/data
+    network_mode: "bridge"
