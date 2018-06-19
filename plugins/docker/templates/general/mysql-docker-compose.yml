@@ -8,4 +8,4 @@
       - MYSQL_USER=user
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=password
-    network_mode: "bridge"
+    network_mode: \"bridge\"

@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-DOCKER_PLUGIN_VERSION=1.3.0
+DOCKER_PLUGIN_VERSION=1.4.0
 DOCKER_PLUGIN_COMMAND="docker"
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"
 DOCKER_PLUGIN_HELP="dockerHelp"
@@ -63,8 +63,9 @@ function dockerExecuteCommand {
 	fi
 
   DOCKER_CONTAINERS=$(grep 'container_name:' "$(pwd)/docker-compose.yml" | awk '{ print $2 }');
+  DOCKER_CONTAINERS_COUNT=($DOCKER_CONTAINERS)
 
-  if [ "${#DOCKER_CONTAINERS[@]}" = 0 ]; then
+  if [ "${#DOCKER_CONTAINERS_COUNT[*]}" = 1 ]; then
       $COMMAND_PREFIX docker exec -it $DOCKER_CONTAINERS $1
   else
     echo "More than one container was detected, containers found: "
