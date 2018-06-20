@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-NODE_PLUGIN_VERSION=1.1.0
+NODE_PLUGIN_VERSION=1.2.0
 NODE_PLUGIN_COMMAND="npm yarn"
 NODE_PLUGIN_FUNCTION="nodeRun"
 NODE_PLUGIN_HELP="nodeHelp"
@@ -20,10 +20,8 @@ function nodeRun {
 	if ! [ NODE_ENABLED ]; then
 		message "ERROR" "Node (NPM/YARN) is disabled on this project."
 	fi
-	
-	local NODE_FULL_PATH=$(pwd)$NPM_PATH
-	
-	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$NODE_FULL_PATH:/usr/src/app --workdir $PATH_PREFIX/usr/src/app node:$NODE_VERSION $@
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH node:$NODE_VERSION $@
 	debug "Finished running npm/yarn"
 }
 
