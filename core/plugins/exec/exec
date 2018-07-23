@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+EXEC_PLUGIN_EXEC=1.0.0
+EXEC_PLUGIN_COMMAND="exec"
+EXEC_PLUGIN_FUNCTION="execRun"
+EXEC_PLUGIN_HELP="execHelp"
+
+function execRun {
+
+  if [ -f "$(pwd)/.eiger.exec" ]; then
+    source $(pwd)/.eiger.exec
+  else
+    message "ERROR" "no \".eiger.exec\" file found"
+  fi
+
+  shift
+  declare COMMAND="$1";
+  shift
+
+  $COMMAND $@
+}
+
+# Function for output top level help
+function execHelp {
+	printf "  run a command from the .eiger.exec file in the current directory. this is just a bash script with functions in it."
+}
