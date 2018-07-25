@@ -7,3 +7,4 @@ plugins/*
 !plugins/init
 !plugins/node
 !plugins/template
+!plugins/exec
