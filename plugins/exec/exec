@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-EXEC_PLUGIN_EXEC=1.0.0
+EXEC_PLUGIN_EXEC=1.0.1
 EXEC_PLUGIN_COMMAND="exec"
 EXEC_PLUGIN_FUNCTION="execRun"
 EXEC_PLUGIN_HELP="execHelp"
@@ -35,6 +35,5 @@ function createFromTemplate {
 
 # Function for output top level help
 function execHelp {
-	printf "  run a command from the .eiger.exec file in the current directory. this is just a bash script with functions in it. If no .eiger.exec file exists you will be prompted"
-	execRun help
+	printf "  exec\t\t\tRun a command from the .eiger.exec file (bash script with functions in it) in the current directory."
 }
