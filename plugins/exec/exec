@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+EXEC_PLUGIN_EXEC=1.0.0
+EXEC_PLUGIN_COMMAND="exec"
+EXEC_PLUGIN_FUNCTION="execRun"
+EXEC_PLUGIN_HELP="execHelp"
+
+function execRun {
+
+  if [ -f "$(pwd)/.eiger.exec" ]; then
+    source $(pwd)/.eiger.exec
+  else
+    if ask "No .eiger.exec file found. Would you like to create one from a template" N; then
+      createFromTemplate
+      exit 0
+    fi
+  fi
+
+  shift
+  declare COMMAND="$1";
+  shift
+
+  $COMMAND $@
+
+}
+
+function createFromTemplate {
+ message "INFO" "Creating .eiger.exec file in the current directory from a template"
+ cp ~/.eiger/plugins/exec/.eiger.exec.template ./.eiger.exec
+ message "INFO" ".eiger.exec file created"
+}
+
+# Function for output top level help
+function execHelp {
+	printf "  run a command from the .eiger.exec file in the current directory. this is just a bash script with functions in it. If no .eiger.exec file exists you will be prompted"
+	execRun help
+}

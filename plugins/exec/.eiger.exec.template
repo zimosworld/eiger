@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+## A function that will output some text explaining how to use this .eiger.exec file
+function help {
+ message "INFO" "  use 'eiger exec hello-world' to run the docker hello-world container"
+}
+
+## A fucntion that can be run with eiger exec hello-world
+function hello-world {
+ docker run hello-world
+}
