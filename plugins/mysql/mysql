@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+MYSQL_PLUGIN_EXEC=1.0.0
+MYSQL_PLUGIN_COMMAND="mysql"
+MYSQL_PLUGIN_FUNCTION="mysqlRun"
+MYSQL_PLUGIN_HELP="mysqlHelp"
+
+MYSQL_PLUGIN_DOCKER_IMAGE="mysql"
+MYSQL_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Plugin entry point
+function mysqlRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "MYSQL")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "MYSQL")
+
+  # Run mysql command on container
+  $COMMAND_PREFIX docker run -it --rm --tty $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION mysql "${@:2}"
+  debug "Finished running mysql"
+
+}
+
+# Top level help for plugin.
+function mysqlHelp {
+	printf "  mysql\t\t\tA simple SQL shell with input line editing capabilities."
+}

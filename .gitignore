@@ -12,3 +12,4 @@ eiger.config
 !plugins/exec
 !plugins/terraform
 !plugins/aws
+!plugins/mysql
