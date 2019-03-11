@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+TERRAFORM_PLUGIN_EXEC=1.0.0
+TERRAFORM_PLUGIN_COMMAND="terraform"
+TERRAFORM_PLUGIN_FUNCTION="terraformRun"
+TERRAFORM_PLUGIN_HELP="terraformHelp"
+
+TERRAFORM_PLUGIN_DOCKER_IMAGE="hashicorp/terraform"
+TERRAFORM_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Plugin entry point
+function terraformRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "TERRAFORM")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "TERRAFORM")
+
+  # Run terraform command on container
+  $COMMAND_PREFIX docker run --rm --interactive --tty --volume $PATH_PREFIX$HOME/.aws:/root/.aws --volume $PATH_PREFIX/:/volume --workdir /volume/$(pwd) $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
+  debug "Finished running terraform"
+
+}
+
+# Top level help for plugin.
+function terraformHelp {
+	printf "  terraform\t\tTerraform is a tool for building, changing, and versioning infrastructure safely and efficiently."
+}

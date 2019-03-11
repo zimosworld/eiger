@@ -10,3 +10,4 @@ eiger.config
 !plugins/node
 !plugins/template
 !plugins/exec
+!plugins/terraform
