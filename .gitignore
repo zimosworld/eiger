@@ -11,3 +11,4 @@ eiger.config
 !plugins/template
 !plugins/exec
 !plugins/terraform
+!plugins/aws

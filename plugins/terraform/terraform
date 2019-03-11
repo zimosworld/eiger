@@ -20,7 +20,7 @@ function terraformRun {
   local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "TERRAFORM")
 
   # Run terraform command on container
-  $COMMAND_PREFIX docker run --rm --interactive --tty --volume $PATH_PREFIX$HOME/.aws:/root/.aws --volume $PATH_PREFIX/:/volume --workdir /volume/$(pwd) $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
+  $COMMAND_PREFIX docker run --rm --interactive --tty --volume $PATH_PREFIX$HOME/.aws:/root/.aws --volume $PATH_PREFIX$(pwd):/volume --workdir $PATH_PREFIX/volume/ $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
   debug "Finished running terraform"
 
 }
