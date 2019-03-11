@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-COMPOSER_PLUGIN_VERSION=1.2.0
+COMPOSER_PLUGIN_VERSION=1.2.1
 COMPOSER_PLUGIN_COMMAND="composer"
 COMPOSER_PLUGIN_FUNCTION="composerRun"
 COMPOSER_PLUGIN_HELP="composerHelp"
@@ -35,7 +35,7 @@ function composerRun {
 
 # Function for output top level help
 function composerHelp {
-	printf "  composer\t\tRun set version of composer inside a docker container."
+	printf "  composer\t\tA application-level package manager for the PHP."
 }
 
 # Init - Eiger project config setup (Creates a .eiger config file for project)

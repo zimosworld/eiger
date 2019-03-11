@@ -3,7 +3,7 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-DOCKER_PLUGIN_VERSION=1.4.0
+DOCKER_PLUGIN_VERSION=1.4.1
 DOCKER_PLUGIN_COMMAND="docker"
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"
 DOCKER_PLUGIN_HELP="dockerHelp"
@@ -15,9 +15,9 @@ source $PLUGINPATH/docker/docker-setup
 function dockerEntryPoint {
 
   case $2 in
-		login)
-			dockerExecuteCommand "bash" "to login to" $3
-			;;
+    login)
+      dockerExecuteCommand "bash" "to login to" $3
+      ;;
     exec)
       dockerExec $@
       ;;
@@ -34,15 +34,15 @@ function dockerEntryPoint {
       dockerSetupContainer
       ;;
     help|--help|-h)
-		  dockerPluginHelp
-		  ;;
+      dockerPluginHelp
+      ;;
 	esac
 }
 
 # Check if container name was passed in with command and run execute function
 function dockerExec {
 
-  if [ ! -z $(docker ps -q -f name=$3) ]; then
+  if [ ! -z $(docker ps | grep -w $3 | awk '{print $1}') ]; then
     dockerExecuteCommand "${*:4}" "run a command in" $3
     return
   fi
@@ -58,15 +58,15 @@ function dockerExecuteCommand {
     return
   fi
 
-	if [ ! -f "$(pwd)/docker-compose.yml" ] && [ ! -f "$(pwd)/docker-compose.yaml" ]; then
-		message "ERROR" "No docker-compose file found. Please run where the docker-compose file lives or pass in a container name."
-	fi
+  if [ ! -f "$(pwd)/docker-compose.yml" ] && [ ! -f "$(pwd)/docker-compose.yaml" ]; then
+    message "ERROR" "No docker-compose file found. Please run where the docker-compose file lives or pass in a container name."
+  fi
 
   DOCKER_CONTAINERS=$(grep 'container_name:' "$(pwd)/docker-compose.yml" | awk '{ print $2 }');
   DOCKER_CONTAINERS_COUNT=($DOCKER_CONTAINERS)
 
   if [ "${#DOCKER_CONTAINERS_COUNT[*]}" = 1 ]; then
-      $COMMAND_PREFIX docker exec -it $DOCKER_CONTAINERS $1
+    $COMMAND_PREFIX docker exec -it $DOCKER_CONTAINERS $1
   else
     echo "More than one container was detected, containers found: "
     PS3="Please enter the number selection of the container you would like $2:"
@@ -110,16 +110,16 @@ function dockerChangeContainerStatus {
 
   # Check if current directory has docker-compose.yml file
   if [ ! -f "$(pwd)/docker-compose.yml" ] && [ ! -f "$(pwd)/docker-compose.yaml" ]; then
-		message "ERROR" "No docker-compose file found. Please run where the docker-compose file lives or pass in a container name."
-	fi
+	message "ERROR" "No docker-compose file found. Please run where the docker-compose file lives or pass in a container name."
+  fi
 
   # Run docker-compose start command
-	$COMMAND_PREFIX docker-compose $DOCKER_COMPOSE_CMD
+  $COMMAND_PREFIX docker-compose $DOCKER_COMPOSE_CMD
 }
 
 # Function for output top level help
 function dockerHelp {
-	printf "  docker (beta)\t\tDocker container commands."
+  printf "  docker (beta)\t\tDocker container commands."
 }
 
 # Plugin help function

@@ -4,10 +4,13 @@
 
 # Plugin configs
 NODE_PLUGIN_VERSION=1.2.0
-NODE_PLUGIN_COMMAND="npm yarn"
+NODE_PLUGIN_COMMAND="node npm yarn"
 NODE_PLUGIN_FUNCTION="nodeRun"
 NODE_PLUGIN_HELP="nodeHelp"
 NODE_PLUGIN_INIT="nodeInit"
+
+NODE_PLUGIN_DOCKER_IMAGE="node"
+NODE_PLUGIN_DOCKER_IMAGE_VERSION="latest"
 
 # Default configs
 NODE_ENABLED=true
@@ -21,7 +24,12 @@ function nodeRun {
 		message "ERROR" "Node (NPM/YARN) is disabled on this project."
 	fi
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH node:$NODE_VERSION $@
+		# Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "NPM")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "NPM")
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
 	debug "Finished running npm/yarn"
 }
 
