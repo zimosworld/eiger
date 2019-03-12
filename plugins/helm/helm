@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+HELM_PLUGIN_EXEC=1.0.0
+HELM_PLUGIN_COMMAND="helm"
+HELM_PLUGIN_FUNCTION="helmRun"
+HELM_PLUGIN_HELP="helmHelp"
+
+HELM_PLUGIN_DOCKER_IMAGE="alpine/helm"
+HELM_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Plugin entry point
+function helmRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "HELM")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "HELM")
+
+  # Run terraform command on container
+  $COMMAND_PREFIX docker run --rm -it -v $PATH_PREFIX$HOME/.kube:/root/.kube -v $PATH_PREFIX$(pwd):/apps $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
+  debug "Finished running helm"
+
+}
+
+# Top level help for plugin.
+function helmHelp {
+	printf "  helm\t\t\tHelm is a tool for managing Kubernetes charts."
+}
