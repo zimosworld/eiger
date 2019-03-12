@@ -13,3 +13,4 @@ eiger.config
 !plugins/terraform
 !plugins/aws
 !plugins/mysql
+!plugins/kubectl
