@@ -5,6 +5,8 @@
 # Plugin configs
 PLUGIN_PLUGIN_VERSION=1.2.0
 PLUGIN_PLUGIN_COMMAND="plugin"
+PLUGIN_PLUGIN_HELP_COMMAND="plugin"
+PLUGIN_PLUGIN_HELP_TEXT="Install/Update third party plugins."
 PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"
 PLUGIN_PLUGIN_HELP="pluginHelp"
 
@@ -111,11 +113,6 @@ function pluginVersion {
     message "ERROR" "Could not find plugin $PLUGINNAME version."
   fi
 
-}
-
-# Plugin help
-function pluginHelp {
-	printf "  plugin\t\tInstall/Update third party plugins."
 }
 
 # Plugin command help

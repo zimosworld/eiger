@@ -5,6 +5,8 @@
 # Plugin configs
 NODE_PLUGIN_VERSION=1.2.0
 NODE_PLUGIN_COMMAND="node npm yarn"
+NODE_PLUGIN_HELP_COMMAND="node"
+NODE_PLUGIN_HELP_TEXT="Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine."
 NODE_PLUGIN_FUNCTION="nodeRun"
 NODE_PLUGIN_HELP="nodeHelp"
 NODE_PLUGIN_INIT="nodeInit"
@@ -31,11 +33,6 @@ function nodeRun {
 
 	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
 	debug "Finished running npm/yarn"
-}
-
-# Function for output top level help
-function nodeHelp {
-	printf "  npm\t\t\tRun npm.\n  yarn\t\t\tRun yarn."
 }
 
 # Init - Eiger project config setup (Creates a .eiger config file for project)

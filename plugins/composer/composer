@@ -5,6 +5,8 @@
 # Plugin configs
 COMPOSER_PLUGIN_VERSION=1.2.1
 COMPOSER_PLUGIN_COMMAND="composer"
+COMPOSER_PLUGIN_HELP_COMMAND="composer"
+COMPOSER_PLUGIN_HELP_TEXT="A application-level package manager for the PHP."
 COMPOSER_PLUGIN_FUNCTION="composerRun"
 COMPOSER_PLUGIN_HELP="composerHelp"
 COMPOSER_PLUGIN_INIT="composerInit"
@@ -31,11 +33,6 @@ function composerRun {
 
 	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$COMPOSER_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@ $COMPOSER_IPR_VALUE
 	debug "Finished running composer"
-}
-
-# Function for output top level help
-function composerHelp {
-	printf "  composer\t\tA application-level package manager for the PHP."
 }
 
 # Init - Eiger project config setup (Creates a .eiger config file for project)

@@ -5,6 +5,8 @@
 # Plugin configs
 MYSQL_PLUGIN_EXEC=1.0.0
 MYSQL_PLUGIN_COMMAND="mysql"
+MYSQL_PLUGIN_HELP_COMMAND="mysql"
+MYSQL_PLUGIN_HELP_TEXT="A simple SQL shell with input line editing capabilities."
 MYSQL_PLUGIN_FUNCTION="mysqlRun"
 MYSQL_PLUGIN_HELP="mysqlHelp"
 
@@ -23,9 +25,4 @@ function mysqlRun {
   $COMMAND_PREFIX docker run -it --rm --tty $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION mysql "${@:2}"
   debug "Finished running mysql"
 
-}
-
-# Top level help for plugin.
-function mysqlHelp {
-	printf "  mysql\t\t\tA simple SQL shell with input line editing capabilities."
 }

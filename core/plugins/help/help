@@ -4,7 +4,7 @@
 
 # Plugin configs
 HELP_PLUGIN_VERSION=1.2.0
-HELP_PLUGIN_COMMAND="help -h --help"
+HELP_PLUGIN_COMMAND="help"
 HELP_PLUGIN_FUNCTION="helpRun"
 
 # Echo help content
@@ -21,11 +21,12 @@ Commands:"
 	for PLUGIN in "${PLUGINS[@]}"
 	do
 	  # If the plugin variable help variable exist and the value is the name of a function run the function
-	  FUNCTIONNAME=${PLUGIN}_PLUGIN_HELP
-		if [ ! -z $(eval echo "$"$FUNCTIONNAME) ] && typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP) > /dev/null; then
-			$(eval echo "$"${PLUGIN}_PLUGIN_HELP)
-			printf "\n"
-		fi
-	done
+	  local COMMANDVAR=${PLUGIN}_PLUGIN_HELP_COMMAND
+		if [ ! -z $(eval echo "$"$COMMANDVAR) ] && ! typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) > /dev/null; then
+      local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
+      local TEXT=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_TEXT)
 
+      printf "  %-20s$TEXT\n" $COMMAND
+		fi
+	done | sort -n
 }

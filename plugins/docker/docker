@@ -5,6 +5,8 @@
 # Plugin configs
 DOCKER_PLUGIN_VERSION=1.4.1
 DOCKER_PLUGIN_COMMAND="docker"
+DOCKER_PLUGIN_HELP_COMMAND="docker"
+DOCKER_PLUGIN_HELP_TEXT="Custom docker shortcuts."
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"
 DOCKER_PLUGIN_HELP="dockerHelp"
 
@@ -115,11 +117,6 @@ function dockerChangeContainerStatus {
 
   # Run docker-compose start command
   $COMMAND_PREFIX docker-compose $DOCKER_COMPOSE_CMD
-}
-
-# Function for output top level help
-function dockerHelp {
-  printf "  docker (beta)\t\tDocker container commands."
 }
 
 # Plugin help function

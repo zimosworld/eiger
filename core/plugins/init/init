@@ -5,6 +5,8 @@
 # Plugin configs
 INIT_PLUGIN_VERSION=1.2.0
 INIT_PLUGIN_COMMAND="init"
+INIT_PLUGIN_HELP_COMMAND="init"
+INIT_PLUGIN_HELP_TEXT="Initialize Eiger on project."
 INIT_PLUGIN_FUNCTION="initRun"
 INIT_PLUGIN_HELP="initHelp"
 
@@ -33,9 +35,4 @@ function initRun {
 
 	# Save content to file
 	printf "$CONTENT" > .eiger
-}
-
-# Function for output top level help
-function initHelp {
-	printf "  init\t\t\tInitialize Eiger on project."
 }

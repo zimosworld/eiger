@@ -5,6 +5,8 @@
 # Plugin configs
 TERRAFORM_PLUGIN_EXEC=1.0.1
 TERRAFORM_PLUGIN_COMMAND="terraform"
+TERRAFORM_PLUGIN_HELP_COMMAND="terraform"
+TERRAFORM_PLUGIN_HELP_TEXT="Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently."
 TERRAFORM_PLUGIN_FUNCTION="terraformRun"
 TERRAFORM_PLUGIN_HELP="terraformHelp"
 
@@ -23,9 +25,4 @@ function terraformRun {
   $COMMAND_PREFIX docker run --rm -it -v $PATH_PREFIX$HOME/.ssh:/root/.ssh -v $PATH_PREFIX$HOME/.aws:/root/.aws -v $PATH_PREFIX$(pwd):/volume --workdir $PATH_PREFIX/volume/ $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
   debug "Finished running terraform"
 
-}
-
-# Top level help for plugin.
-function terraformHelp {
-	printf "  terraform\t\tTerraform is a tool for building, changing, and versioning infrastructure safely and efficiently."
 }
