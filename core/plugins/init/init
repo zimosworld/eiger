@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-INIT_PLUGIN_VERSION=1.2.0
 INIT_PLUGIN_COMMAND="init"
 INIT_PLUGIN_HELP_COMMAND="init"
 INIT_PLUGIN_HELP_TEXT="Initialize Eiger on project."

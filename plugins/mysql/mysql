@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-MYSQL_PLUGIN_EXEC=1.0.0
 MYSQL_PLUGIN_COMMAND="mysql"
 MYSQL_PLUGIN_HELP_COMMAND="mysql"
 MYSQL_PLUGIN_HELP_TEXT="A simple SQL shell with input line editing capabilities."

@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-HELP_PLUGIN_VERSION=1.2.0
 HELP_PLUGIN_COMMAND="help"
 HELP_PLUGIN_FUNCTION="helpRun"
 

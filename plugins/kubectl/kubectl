@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-KUBECTL_PLUGIN_EXEC=1.0.0
 KUBECTL_PLUGIN_COMMAND="kubectl"
 KUBECTL_PLUGIN_HELP_COMMAND="kubectl"
 KUBECTL_PLUGIN_HELP_TEXT="Kubernetes CLI client"

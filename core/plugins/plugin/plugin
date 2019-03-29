@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-PLUGIN_PLUGIN_VERSION=1.2.0
 PLUGIN_PLUGIN_COMMAND="plugin"
 PLUGIN_PLUGIN_HELP_COMMAND="plugin"
 PLUGIN_PLUGIN_HELP_TEXT="Install/Update third party plugins."

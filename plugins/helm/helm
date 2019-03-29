@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-HELM_PLUGIN_EXEC=1.0.0
 HELM_PLUGIN_COMMAND="helm"
 HELM_PLUGIN_HELP_COMMAND="helm"
 HELM_PLUGIN_HELP_TEXT="Helm is a tool for managing Kubernetes charts."

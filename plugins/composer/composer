@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-COMPOSER_PLUGIN_VERSION=1.2.1
 COMPOSER_PLUGIN_COMMAND="composer"
 COMPOSER_PLUGIN_HELP_COMMAND="composer"
 COMPOSER_PLUGIN_HELP_TEXT="A application-level package manager for the PHP."

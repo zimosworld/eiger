@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-AWS_PLUGIN_VERSION=1.0.0
 AWS_PLUGIN_COMMAND="aws aws-cli awscli"
 AWS_PLUGIN_HELP_COMMAND="aws"
 AWS_PLUGIN_HELP_TEXT="AWS CLI is a unified tool that provides a consistent interface for interacting with all parts of AWS."

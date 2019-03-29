@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-UPDATE_PLUGIN_VERSION=1.2.0
 UPDATE_PLUGIN_COMMAND="update self-update"
 UPDATE_PLUGIN_HELP_COMMAND="update"
 UPDATE_PLUGIN_HELP_TEXT="Update Eiger to the latest stable version."

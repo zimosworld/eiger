@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-TERRAFORM_PLUGIN_EXEC=1.0.1
 TERRAFORM_PLUGIN_COMMAND="terraform"
 TERRAFORM_PLUGIN_HELP_COMMAND="terraform"
 TERRAFORM_PLUGIN_HELP_TEXT="Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently."

@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-NODE_PLUGIN_VERSION=1.2.0
 NODE_PLUGIN_COMMAND="node npm yarn"
 NODE_PLUGIN_HELP_COMMAND="node"
 NODE_PLUGIN_HELP_TEXT="Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine."

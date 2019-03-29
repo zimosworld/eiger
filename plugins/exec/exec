@@ -3,7 +3,6 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-EXEC_PLUGIN_EXEC=1.0.1
 EXEC_PLUGIN_COMMAND="exec"
 EXEC_PLUGIN_HELP_COMMAND="exec"
 EXEC_PLUGIN_HELP_TEXT="Run a function from the .eiger.exec file in the current directory."
