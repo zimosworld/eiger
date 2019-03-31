@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+ALIASES_PLUGIN_COMMAND="aliases"
+ALIASES_PLUGIN_HELP_COMMAND="aliases"
+ALIASES_PLUGIN_HELP_TEXT="Manage aliases for Eiger plugins allowing you to run them without eiger in front."
+ALIASES_PLUGIN_FUNCTION="aliasEntryPoint"
+ALIASES_PLUGIN_HELP="aliasHelp"
+
+function aliasEntryPoint {
+
+  echo "Please select an option: "
+  PS3="Please enter your choice: "
+  options=("Enable All" "Disable All" "Toggle" "Quit")
+
+  select opt in "${options[@]}"
+  do
+    case $opt in
+      "Enable All")
+        enableAll
+        break
+        ;;
+      "Disable All")
+        disableAll
+        break
+        ;;
+      "Toggle")
+        listAliases
+        break
+        ;;
+      "Quit")
+        break
+        ;;
+      *)
+        echo "invalid option"
+        ;;
+    esac
+  done
+}
+
+# Enable aliases for all plugin commands
+function enableAll {
+
+  > ~/.eiger/eiger.aliases
+
+  for PLUGIN in "${PLUGINS[@]}"
+  do
+    local COMMANDVAR=${PLUGIN}_PLUGIN_HELP_COMMAND
+    if [ ! -z $(eval echo "$"$COMMANDVAR) ] && ! typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) > /dev/null; then
+      local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
+
+      echo "alias $COMMAND='eiger $COMMAND'" >> ~/.eiger/eiger.aliases
+    fi
+  done
+
+  echo "All aliases added"
+}
+
+# Disable aliases for all plugin commands
+function disableAll {
+  #Clear out eiger aliases file
+  echo "" > ~/.eiger/eiger.aliases
+  echo "All aliases removed"
+}
+
+# Prompt for showing toggle aliases
+function listAliases {
+
+  ALIASES_PLUGIN_ACTIVE=$(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sort -n)
+
+  OPTIONS=
+  for PLUGIN in "${PLUGINS[@]}"
+  do
+    local COMMANDVAR=${PLUGIN}_PLUGIN_HELP_COMMAND
+    if [ ! -z $(eval echo "$"$COMMANDVAR) ] && ! typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) > /dev/null; then
+      local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
+
+      if [[ "${ALIASES_PLUGIN_ACTIVE[*]}" == *"${COMMAND}"* ]]; then
+        OPTIONS+="$COMMAND - Active,"
+      else
+        OPTIONS+="$COMMAND - Not Active,"
+      fi
+
+    fi
+  done
+
+  IFS=,
+  echo "Please select an alias to enable/disable: "
+  PS3="Please enter your choice: "
+  options=(${OPTIONS} "Quit")
+
+  select opt in "${options[@]}"
+  do
+    case $opt in
+      "Quit")
+        break
+        ;;
+      *)
+        toggleAliases $opt
+        break;
+        ;;
+    esac
+  done
+}
+
+# Logic to toggle alias on/off
+function toggleAliases {
+
+  IFS=' '
+  local SELECTED=$(echo "$1" | grep -o '.* -' | sed 's/ -//g')
+  local ACTIVE_ALIASESES=($(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | sort -n))
+
+  if [[ "${ACTIVE_ALIASESES[*]}" == *"${SELECTED}"* ]]; then
+    ACTIVE_ALIASESES=( "${ACTIVE_ALIASESES[@]/$SELECTED/}" )
+  else
+    ACTIVE_ALIASESES+=( $SELECTED )
+  fi
+
+  > ~/.eiger/eiger.aliases
+
+  for LINE in "${ACTIVE_ALIASESES[@]}"
+  do
+    if [[ "${LINE}" == '' ]]; then
+      continue
+    fi
+
+    echo "alias $LINE='eiger $LINE'" >> ~/.eiger/eiger.aliases
+  done
+
+  listAliases
+}

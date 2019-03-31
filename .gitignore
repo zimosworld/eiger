@@ -2,6 +2,7 @@
 .docker.env
 plugins/*
 eiger.config
+eiger.aliases
 
 !plugins/composer
 !plugins/docker
