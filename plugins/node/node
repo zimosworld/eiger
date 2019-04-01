@@ -4,6 +4,7 @@
 
 # Plugin configs
 NODE_PLUGIN_COMMAND="node npm yarn"
+NODE_PLUGIN_ALLOW_ALIAS="true"
 NODE_PLUGIN_HELP_COMMAND="node"
 NODE_PLUGIN_HELP_TEXT="Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine."
 NODE_PLUGIN_FUNCTION="nodeRun"

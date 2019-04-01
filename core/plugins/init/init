@@ -4,6 +4,7 @@
 
 # Plugin configs
 INIT_PLUGIN_COMMAND="init"
+INIT_PLUGIN_ALLOW_ALIAS="false"
 INIT_PLUGIN_HELP_COMMAND="init"
 INIT_PLUGIN_HELP_TEXT="Initialize Eiger on project."
 INIT_PLUGIN_FUNCTION="initRun"

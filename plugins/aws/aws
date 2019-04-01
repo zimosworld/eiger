@@ -4,6 +4,7 @@
 
 # Plugin configs
 AWS_PLUGIN_COMMAND="aws aws-cli awscli"
+AWS_PLUGIN_ALLOW_ALIAS="true"
 AWS_PLUGIN_HELP_COMMAND="aws"
 AWS_PLUGIN_HELP_TEXT="AWS CLI is a unified tool that provides a consistent interface for interacting with all parts of AWS."
 AWS_PLUGIN_FUNCTION="awsRun"

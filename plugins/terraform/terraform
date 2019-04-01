@@ -4,6 +4,7 @@
 
 # Plugin configs
 TERRAFORM_PLUGIN_COMMAND="terraform"
+TERRAFORM_PLUGIN_ALLOW_ALIAS="true"
 TERRAFORM_PLUGIN_HELP_COMMAND="terraform"
 TERRAFORM_PLUGIN_HELP_TEXT="Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently."
 TERRAFORM_PLUGIN_FUNCTION="terraformRun"

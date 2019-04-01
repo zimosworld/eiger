@@ -4,6 +4,7 @@
 
 # Plugin configs
 HELM_PLUGIN_COMMAND="helm"
+HELM_PLUGIN_ALLOW_ALIAS="true"
 HELM_PLUGIN_HELP_COMMAND="helm"
 HELM_PLUGIN_HELP_TEXT="Helm is a tool for managing Kubernetes charts."
 HELM_PLUGIN_FUNCTION="helmRun"

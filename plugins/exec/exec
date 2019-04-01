@@ -4,6 +4,7 @@
 
 # Plugin configs
 EXEC_PLUGIN_COMMAND="exec"
+EXEC_PLUGIN_ALLOW_ALIAS="true"
 EXEC_PLUGIN_HELP_COMMAND="exec"
 EXEC_PLUGIN_HELP_TEXT="Run a function from the .eiger.exec file in the current directory."
 EXEC_PLUGIN_FUNCTION="execRun"

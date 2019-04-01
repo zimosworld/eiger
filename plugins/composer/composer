@@ -4,6 +4,7 @@
 
 # Plugin configs
 COMPOSER_PLUGIN_COMMAND="composer"
+COMPOSER_PLUGIN_ALLOW_ALIAS="true"
 COMPOSER_PLUGIN_HELP_COMMAND="composer"
 COMPOSER_PLUGIN_HELP_TEXT="A application-level package manager for the PHP."
 COMPOSER_PLUGIN_FUNCTION="composerRun"

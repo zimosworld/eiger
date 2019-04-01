@@ -4,6 +4,7 @@
 
 # Plugin configs
 PLUGIN_PLUGIN_COMMAND="plugin"
+PLUGIN_PLUGIN_ALLOW_ALIAS="false"
 PLUGIN_PLUGIN_HELP_COMMAND="plugin"
 PLUGIN_PLUGIN_HELP_TEXT="Install/Update third party plugins."
 PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"

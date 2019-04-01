@@ -4,6 +4,7 @@
 
 # Plugin configs
 HELP_PLUGIN_COMMAND="help"
+HELP_PLUGIN_ALLOW_ALIAS="false"
 HELP_PLUGIN_FUNCTION="helpRun"
 
 # Echo help content

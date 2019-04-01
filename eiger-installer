@@ -60,7 +60,7 @@ function runInstaller {
         if echo "
 PATH=$PATH:~/.eiger
 source ~/.eiger/eiger.aliases
-alias sr='source ~/.bash_profile'" >> ~/.bashrc; then
+alias alias_refresh='source ~/.bash_profile'" >> ~/.bashrc; then
 
             chmod 740 ~/.eiger/eiger
 

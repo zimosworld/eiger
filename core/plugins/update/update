@@ -4,6 +4,7 @@
 
 # Plugin configs
 UPDATE_PLUGIN_COMMAND="update self-update"
+UPDATE_PLUGIN_ALLOW_ALIAS="false"
 UPDATE_PLUGIN_HELP_COMMAND="update"
 UPDATE_PLUGIN_HELP_TEXT="Update Eiger to the latest stable version."
 UPDATE_PLUGIN_FUNCTION="runUpdate"

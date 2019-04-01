@@ -4,6 +4,7 @@
 
 # Plugin configs
 MYSQL_PLUGIN_COMMAND="mysql"
+MYSQL_PLUGIN_ALLOW_ALIAS="true"
 MYSQL_PLUGIN_HELP_COMMAND="mysql"
 MYSQL_PLUGIN_HELP_TEXT="A simple SQL shell with input line editing capabilities."
 MYSQL_PLUGIN_FUNCTION="mysqlRun"

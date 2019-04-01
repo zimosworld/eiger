@@ -4,6 +4,7 @@
 
 # Plugin configs
 DOCKERENV_PLUGIN_COMMAND="dei docker-env-init"
+DOCKERENV_PLUGIN_ALLOW_ALIAS="true"
 DOCKERENV_PLUGIN_HELP_COMMAND="dei"
 DOCKERENV_PLUGIN_HELP_TEXT="Creates .docker.env with settings based on system OS."
 DOCKERENV_PLUGIN_FUNCTION="dockerEnvRun"

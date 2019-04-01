@@ -4,6 +4,7 @@
 
 # Plugin configs
 DOCKER_PLUGIN_COMMAND="docker"
+DOCKER_PLUGIN_ALLOW_ALIAS="false"
 DOCKER_PLUGIN_HELP_COMMAND="docker"
 DOCKER_PLUGIN_HELP_TEXT="Custom docker shortcuts."
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"

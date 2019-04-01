@@ -51,8 +51,7 @@ function enableAll {
 
   for PLUGIN in "${PLUGINS[@]}"
   do
-    local COMMANDVAR=${PLUGIN}_PLUGIN_HELP_COMMAND
-    if [ ! -z $(eval echo "$"$COMMANDVAR) ] && ! typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) > /dev/null; then
+    if [[ "$(eval echo "$"${PLUGIN}_PLUGIN_ALLOW_ALIAS)" == "true" ]] && [[ ! -z $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) ]]; then
       local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
 
       echo "alias $COMMAND='eiger $COMMAND'" >> ~/.eiger/eiger.aliases
@@ -74,16 +73,15 @@ function disableAll {
 # Prompt for showing toggle aliases
 function listAliases {
 
-  ALIASES_PLUGIN_ACTIVE=$(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sort -n)
+  local ACTIVE_ALIASES=$(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sort -n)
 
   OPTIONS=
   for PLUGIN in "${PLUGINS[@]}"
   do
-    local COMMANDVAR=${PLUGIN}_PLUGIN_HELP_COMMAND
-    if [ ! -z $(eval echo "$"$COMMANDVAR) ] && ! typeset -f $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) > /dev/null; then
+    if [[ "$(eval echo "$"${PLUGIN}_PLUGIN_ALLOW_ALIAS)" == "true" ]] && [[ ! -z $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) ]]; then
       local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
 
-      if [[ "${ALIASES_PLUGIN_ACTIVE[*]}" == *"${COMMAND}"* ]]; then
+      if [[ "${ACTIVE_ALIASES[*]}" == *"${COMMAND}"* ]]; then
         OPTIONS+="$COMMAND - Active,"
       else
         OPTIONS+="$COMMAND - Not Active,"
@@ -117,17 +115,17 @@ function toggleAliases {
 
   IFS=' '
   local SELECTED=$(echo "$1" | grep -o '.* -' | sed 's/ -//g')
-  local ACTIVE_ALIASESES=($(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | sort -n))
+  local ACTIVE_ALIASES=($(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | sort -n))
 
-  if [[ "${ACTIVE_ALIASESES[*]}" == *"${SELECTED}"* ]]; then
-    ACTIVE_ALIASESES=( "${ACTIVE_ALIASESES[@]/$SELECTED/}" )
+  if [[ "${ACTIVE_ALIASES[*]}" == *"${SELECTED}"* ]]; then
+    ACTIVE_ALIASES=( "${ACTIVE_ALIASES[@]/$SELECTED/}" )
   else
-    ACTIVE_ALIASESES+=( $SELECTED )
+    ACTIVE_ALIASES+=( $SELECTED )
   fi
 
   > ~/.eiger/eiger.aliases
 
-  for LINE in "${ACTIVE_ALIASESES[@]}"
+  for LINE in "${ACTIVE_ALIASES[@]}"
   do
     if [[ "${LINE}" == '' ]]; then
       continue
@@ -141,5 +139,5 @@ function toggleAliases {
 
 # Show message to advise changes need some action
 function showRefreshMessage {
-  echo "Please open a new terminal window or run `sr` to use the alias changes."
+  echo "Please open a new terminal window or run 'alias_refresh' for the applied changes to be active."
 }
