@@ -58,8 +58,11 @@ function runInstaller {
         message "INFO" "Script installed, adding alias..."
 
         if echo "
-alias eiger='bash $INSTALL_PATH/eiger'
-alias eiger-update='bash $INSTALL_PATH/eiger-update'" >> ~/.bashrc; then
+PATH=$PATH:~/.eiger
+source ~/.eiger/eiger.aliases
+alias sr='source ~/.bash_profile'" >> ~/.bashrc; then
+
+            chmod 740 ~/.eiger/eiger
 
             source ~/.bashrc
 

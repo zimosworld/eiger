@@ -11,6 +11,10 @@ ALIASES_PLUGIN_HELP="aliasHelp"
 
 function aliasEntryPoint {
 
+  if [[ ! -f ~/.eiger/eiger.aliases ]]; then
+      touch ~/.eiger/eiger.aliases
+  fi
+
   echo "Please select an option: "
   PS3="Please enter your choice: "
   options=("Enable All" "Disable All" "Toggle" "Quit")
@@ -56,6 +60,7 @@ function enableAll {
   done
 
   echo "All aliases added"
+  showRefreshMessage
 }
 
 # Disable aliases for all plugin commands
@@ -63,6 +68,7 @@ function disableAll {
   #Clear out eiger aliases file
   echo "" > ~/.eiger/eiger.aliases
   echo "All aliases removed"
+  showRefreshMessage
 }
 
 # Prompt for showing toggle aliases
@@ -95,6 +101,7 @@ function listAliases {
   do
     case $opt in
       "Quit")
+        showRefreshMessage
         break
         ;;
       *)
@@ -130,4 +137,9 @@ function toggleAliases {
   done
 
   listAliases
+}
+
+# Show message to advise changes need some action
+function showRefreshMessage {
+  echo "Please open a new terminal window or run `sr` to use the alias changes."
 }
