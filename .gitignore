@@ -1,9 +1,11 @@
 .idea/*
 .docker.env
 plugins/*
+userdata/*
 eiger.config
 eiger.aliases
 
+!userdata/.gitkeep
 !plugins/composer
 !plugins/docker
 !plugins/dockerenv

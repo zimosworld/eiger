@@ -19,7 +19,13 @@ function message {
 		echo "Exiting..."
 		exit 1
 	fi
-} 
+}
+
+# Echo info with info tag and message
+function echo_info {
+
+  message "INFO" "${1}"
+}
 
 # Check certain commands are installed
 function checkCommands {
@@ -137,4 +143,9 @@ function getDockerImageSetting {
 function getDockerImageVersionSetting {
 
   echo $(getSettingValue $1 "DOCKER_IMAGE_VERSION" $(eval echo "$"${1}_PLUGIN_DOCKER_IMAGE_VERSION))
+}
+
+function getPluginStoragePath {
+
+  echo "${STORAGEPATH}/${1}/${2}/${3}"
 }
