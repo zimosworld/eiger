@@ -31,7 +31,10 @@ function composerRun {
 	  COMPOSER_IPR_VALUE="--ignore-platform-reqs"
 	fi
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP --volume $PATH_PREFIX$COMPOSER_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@ $COMPOSER_IPR_VALUE
+  # Get plugin storage path
+  local PLUGIN_STORAGE=$(getPluginStoragePath "COMPOSER" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP -v $PATH_PREFIX$PLUGIN_STORAGE/cache:/tmp/cache --volume $PATH_PREFIX$COMPOSER_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@ $COMPOSER_IPR_VALUE
 	debug "Finished running composer"
 }
 

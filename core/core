@@ -80,15 +80,11 @@ case "${unameOut}" in
 		debug "Defining variables for mac."
 		OS_TYPE=Mac
 		RUN_AS=
-		USER="www-data"
-        GROUP="www-data"
 		;;
   CYGWIN*|MINGW*)
 		debug "Defining variables for windows."
 
 		OS_TYPE=Windows
-		USER="www-data"
-    GROUP="www-data"
     COMMAND_PREFIX="winpty"
     PATH_PREFIX=/
     RUN_AS=

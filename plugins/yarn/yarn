@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+YARN_PLUGIN_COMMAND="yarn"
+YARN_PLUGIN_ALLOW_ALIAS="true"
+YARN_PLUGIN_HELP_COMMAND="yarn"
+YARN_PLUGIN_HELP_TEXT="Yarn is a new package manager that replaces the existing workflow for the npm client or other package managers while remaining compatible with the npm registry."
+YARN_PLUGIN_FUNCTION="yarnRun"
+YARN_PLUGIN_HELP="yarnHelp"
+YARN_PLUGIN_INIT="yarnInit"
+
+YARN_PLUGIN_DOCKER_IMAGE="node"
+YARN_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Default configs
+YARN_ENABLED=true
+YARN_PATH=/
+
+# Run Node command inside docker container
+function yarnRun {
+
+	if ! [ YARN_ENABLED ]; then
+		message "ERROR" "YARN is disabled on this project."
+	fi
+
+	# Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "YARN")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "YARN")
+  # Get plugin storage path
+  local PLUGIN_STORAGE=$(getPluginStoragePath "YARN" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+
+	$COMMAND_PREFIX docker run --rm -it $RUN_AS -v $PATH_PREFIX$PLUGIN_STORAGE/cache:/usr/local/share/.cache -v $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$YARN_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
+	debug "Finished running yarn"
+}
+
+# Init - Eiger project config setup (Creates a .eiger config file for project)
+function yarnInit {
+
+	local INIT_YARN_ENABLED=false
+	local INIT_YARN_PATH=
+	local INIT_YARN_VERSION=
+	
+	if ask "Enabled Yarn?" N; then
+		INIT_YARN_ENABLED=true
+		
+		read -p "Relative path to package.json file? [/]): " UI_YARN_PATH
+		INIT_YARN_PATH=${UI_YARN_PATH:-/}
+		
+		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_YARN_VERSION
+		INIT_YARN_VERSION=${UI_YARN_VERSION:-9.11.1}
+	fi
+	
+	echo "YARN_ENABLED=$INIT_YARN_ENABLED
+YARN_PATH=$INIT_YARN_PATH
+YARN_DOCKER_IMAGE=node
+YARN_DOCKER_VERSION=$INIT_YARN_VERSION"
+}

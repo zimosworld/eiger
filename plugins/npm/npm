@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+NPM_PLUGIN_COMMAND="npm"
+NPM_PLUGIN_ALLOW_ALIAS="true"
+NPM_PLUGIN_HELP_COMMAND="npm"
+NPM_PLUGIN_HELP_TEXT="npm is a package manager for the JavaScript programming language."
+NPM_PLUGIN_FUNCTION="npmRun"
+NPM_PLUGIN_HELP="npmHelp"
+NPM_PLUGIN_INIT="npmInit"
+
+NPM_PLUGIN_DOCKER_IMAGE="node"
+NPM_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Default configs
+NPM_ENABLED=true
+NPM_PATH=/
+NPM_VERSION=latest
+
+# Run Node command inside docker container
+function npmRun {
+
+	if ! [ NPM_ENABLED ]; then
+		message "ERROR" "NPM is disabled on this project."
+	fi
+
+	# Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "NPM")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "NPM")
+  # Get plugin storage path
+  local PLUGIN_STORAGE=$(getPluginStoragePath "NPM" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+
+	$COMMAND_PREFIX docker run --rm -it $RUN_AS -v $PATH_PREFIX$PLUGIN_STORAGE/cache:/home/$USER/.npm -v $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
+	debug "Finished running npm"
+}
+
+# Init - Eiger project config setup (Creates a .eiger config file for project)
+function npmInit {
+
+	local INIT_NPM_ENABLED=false
+	local INIT_NPM_PATH=
+	local INIT_NPM_VERSION=
+	
+	if ask "Enabled NPM?" N; then
+		INIT_NPM_ENABLED=true
+		
+		read -p "Relative path to package.json file? [/]): " UI_NPM_PATH
+		INIT_NPM_PATH=${UI_NPM_PATH:-/}
+		
+		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/npm/ for available versions. (Default: 9.11.1): " UI_NPM_VERSION
+		INIT_NPM_VERSION=${UI_NPM_VERSION:-9.11.1}
+	fi
+	
+	echo "NPM_ENABLED=$INIT_NPM_ENABLED
+NPM_PATH=$INIT_NPM_PATH
+NPM_DOCKER_IMAGE=node
+NPM_DOCKER_VERSION=$INIT_NPM_VERSION"
+}

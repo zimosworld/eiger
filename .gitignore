@@ -18,3 +18,5 @@ eiger.aliases
 !plugins/mysql
 !plugins/kubectl
 !plugins/helm
+!plugins/yarn
+!plugins/npm
