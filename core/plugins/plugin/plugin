@@ -3,8 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-PLUGIN_PLUGIN_VERSION=1.2.0
 PLUGIN_PLUGIN_COMMAND="plugin"
+PLUGIN_PLUGIN_ALLOW_ALIAS="false"
+PLUGIN_PLUGIN_HELP_COMMAND="plugin"
+PLUGIN_PLUGIN_HELP_TEXT="Install/Update third party plugins."
 PLUGIN_PLUGIN_FUNCTION="pluginEntryPoint"
 PLUGIN_PLUGIN_HELP="pluginHelp"
 
@@ -12,9 +14,6 @@ PLUGIN_PLUGIN_HELP="pluginHelp"
 function pluginEntryPoint {
 
 	case $2 in
-		help|--help|-h)
-		  pluginCommandHelp
-		  ;;
 		update)
 		  pluginUpdate $3
       ;;
@@ -24,6 +23,9 @@ function pluginEntryPoint {
     install)
       pluginInstall $3 $4
       ;;
+    help|--help|-h|*)
+		  pluginCommandHelp
+		  ;;
 	esac
 
 }
@@ -111,11 +113,6 @@ function pluginVersion {
     message "ERROR" "Could not find plugin $PLUGINNAME version."
   fi
 
-}
-
-# Plugin help
-function pluginHelp {
-	printf "  plugin\t\tInstall/Update third party plugins."
 }
 
 # Plugin command help

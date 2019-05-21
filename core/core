@@ -1,10 +1,11 @@
 #!/bin/bash
 
 DEBUG=false
-VERSION=2.5.0
+VERSION=2.6.0
 
 COREPLUGINPATH=$COREPATH/plugins
 PLUGINPATH=$SCRIPTPATH/plugins
+STORAGEPATH=$SCRIPTPATH/userdata
 
 SSHKEYPATH=$HOME/.ssh
 
@@ -42,7 +43,7 @@ fi
 if [ -f "$(pwd)/.eiger" ]; then
 	source $(pwd)/.eiger
 else
-	message "WARNING" "\".eiger\" file not found, using default settings."
+	debug "\".eiger\" file not found, using default settings."
 fi
 
 ####################################################
@@ -77,14 +78,13 @@ case "${unameOut}" in
 		;;
   Darwin*)
 		debug "Defining variables for mac."
-		OS_TYPE=Linux
+		OS_TYPE=Mac
+		RUN_AS=
 		;;
   CYGWIN*|MINGW*)
 		debug "Defining variables for windows."
 
 		OS_TYPE=Windows
-		USER="www-data"
-    GROUP="www-data"
     COMMAND_PREFIX="winpty"
     PATH_PREFIX=/
     RUN_AS=

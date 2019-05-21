@@ -3,8 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-UPDATE_PLUGIN_VERSION=1.2.0
 UPDATE_PLUGIN_COMMAND="update self-update"
+UPDATE_PLUGIN_ALLOW_ALIAS="false"
+UPDATE_PLUGIN_HELP_COMMAND="update"
+UPDATE_PLUGIN_HELP_TEXT="Update Eiger to the latest stable version."
 UPDATE_PLUGIN_FUNCTION="runUpdate"
 UPDATE_PLUGIN_HELP="updateHelp"
 
@@ -30,9 +32,4 @@ function runUpdate {
   fi
 
   message "INFO" "Already on the latest version."
-}
-
-# Function for output top level help
-function updateHelp {
-	printf "  update\t\tUpdate Eiger."
 }

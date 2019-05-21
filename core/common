@@ -19,7 +19,13 @@ function message {
 		echo "Exiting..."
 		exit 1
 	fi
-} 
+}
+
+# Echo info with info tag and message
+function echo_info {
+
+  message "INFO" "${1}"
+}
 
 # Check certain commands are installed
 function checkCommands {
@@ -101,4 +107,45 @@ function loadConfig {
       source $SCRIPTPATH/eiger.config
     fi
   fi
+}
+
+#$1=Plugin Name
+#$2=Variable Name/Template
+#$3=Default value (If global and local overwrite does not exist)
+
+# Get setting value checking for local and global version overwrite
+function getSettingValue {
+
+  local PLUGINNAME=$1
+  local VARIABLETEMPLATE=$2
+  local VALUE=$3
+
+  # Global overwrite check for variable
+  if [ ! -z $(eval echo "$"${PLUGINNAME}_GLOBAL_${VARIABLETEMPLATE}) ]; then
+    VALUE=$(eval echo "$"${PLUGINNAME}_GLOBAL_${VARIABLETEMPLATE})
+  fi;
+
+  # Local overwrite check for variable
+  if [ ! -z $(eval echo "$"${PLUGINNAME}_${VARIABLETEMPLATE}) ]; then
+    VALUE=$(eval echo "$"${PLUGINNAME}_${VARIABLETEMPLATE})
+  fi;
+
+  echo $VALUE
+}
+
+# Get docker image setting, checking for local and global version overwrite
+function getDockerImageSetting {
+
+  echo $(getSettingValue $1 "DOCKER_IMAGE" $(eval echo "$"${1}_PLUGIN_DOCKER_IMAGE))
+}
+
+# Get docker image version setting, checking for local and global version overwrite
+function getDockerImageVersionSetting {
+
+  echo $(getSettingValue $1 "DOCKER_IMAGE_VERSION" $(eval echo "$"${1}_PLUGIN_DOCKER_IMAGE_VERSION))
+}
+
+function getPluginStoragePath {
+
+  echo "${STORAGEPATH}/${1}/${2}/${3}"
 }

@@ -3,8 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-EXEC_PLUGIN_EXEC=1.0.1
 EXEC_PLUGIN_COMMAND="exec"
+EXEC_PLUGIN_ALLOW_ALIAS="true"
+EXEC_PLUGIN_HELP_COMMAND="exec"
+EXEC_PLUGIN_HELP_TEXT="Run a bash function from the .eiger.exec file in the current directory."
 EXEC_PLUGIN_FUNCTION="execRun"
 EXEC_PLUGIN_HELP="execHelp"
 
@@ -24,16 +26,10 @@ function execRun {
   shift
 
   $COMMAND $@
-
 }
 
 function createFromTemplate {
  message "INFO" "Creating .eiger.exec file in the current directory from a template"
  cp ~/.eiger/plugins/exec/.eiger.exec.template ./.eiger.exec
  message "INFO" ".eiger.exec file created"
-}
-
-# Function for output top level help
-function execHelp {
-	printf "  exec\t\t\tRun a command from the .eiger.exec file (bash script with functions in it) in the current directory."
 }

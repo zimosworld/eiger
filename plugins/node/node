@@ -3,11 +3,16 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-NODE_PLUGIN_VERSION=1.2.0
-NODE_PLUGIN_COMMAND="npm yarn"
+NODE_PLUGIN_COMMAND="node"
+NODE_PLUGIN_ALLOW_ALIAS="true"
+NODE_PLUGIN_HELP_COMMAND="node"
+NODE_PLUGIN_HELP_TEXT="Node is a JavaScript runtime built on Chrome's V8 JavaScript engine."
 NODE_PLUGIN_FUNCTION="nodeRun"
 NODE_PLUGIN_HELP="nodeHelp"
 NODE_PLUGIN_INIT="nodeInit"
+
+NODE_PLUGIN_DOCKER_IMAGE="node"
+NODE_PLUGIN_DOCKER_IMAGE_VERSION="latest"
 
 # Default configs
 NODE_ENABLED=true
@@ -21,33 +26,11 @@ function nodeRun {
 		message "ERROR" "Node (NPM/YARN) is disabled on this project."
 	fi
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH node:$NODE_VERSION $@
+		# Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "NODE")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "NODE")
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty $RUN_AS --volume $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$NPM_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
 	debug "Finished running npm/yarn"
-}
-
-# Function for output top level help
-function nodeHelp {
-	printf "  npm\t\t\tRun npm.\n  yarn\t\t\tRun yarn."
-}
-
-# Init - Eiger project config setup (Creates a .eiger config file for project)
-function nodeInit {
-
-	local INIT_NODE_ENABLED=false
-	local INIT_NODE_PATH=
-	local INIT_NODE_VERSION=
-	
-	if ask "Enabled Node (NPM/YARN)?" N; then
-		INIT_NODE_ENABLED=true
-		
-		read -p "Relative path to package.json file? [/]): " UI_NODE_PATH
-		INIT_NODE_PATH=${UI_NODE_PATH:-/}
-		
-		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_NODE_VERSION
-		INIT_NODE_VERSION=${UI_NODE_VERSION:-9.11.1}
-	fi
-	
-	echo "NODE_ENABLED=$INIT_NODE_ENABLED
-NPM_PATH=$INIT_NODE_PATH
-NODE_VERSION=$INIT_NODE_VERSION"
 }

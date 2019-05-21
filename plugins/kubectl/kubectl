@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+KUBECTL_PLUGIN_COMMAND="kubectl"
+KUBECTL_PLUGIN_ALLOW_ALIAS="true"
+KUBECTL_PLUGIN_HELP_COMMAND="kubectl"
+KUBECTL_PLUGIN_HELP_TEXT="Kubernetes CLI client"
+KUBECTL_PLUGIN_FUNCTION="kubectlRun"
+KUBECTL_PLUGIN_HELP="kubectlHelp"
+
+KUBECTL_PLUGIN_DOCKER_IMAGE="lachlanevenson/k8s-kubectl"
+KUBECTL_PLUGIN_DOCKER_IMAGE_VERSION="v1.11.7"
+
+# Plugin entry point
+function kubectlRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "KUBECTL")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "KUBECTL")
+
+  # Run terraform command on container
+  $COMMAND_PREFIX docker run --rm -it -v $PATH_PREFIX$HOME/.kube:/root/.kube -v $PATH_PREFIX$(pwd):/volume -w $PATH_PREFIX/volume/ $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
+  debug "Finished running kubectl"
+
+}

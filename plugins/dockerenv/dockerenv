@@ -3,8 +3,10 @@
 # Configs (Prefix with Plugin name)
 
 # Plugin configs
-DOCKERENV_PLUGIN_VERSION=1.1.0
 DOCKERENV_PLUGIN_COMMAND="dei docker-env-init"
+DOCKERENV_PLUGIN_ALLOW_ALIAS="true"
+DOCKERENV_PLUGIN_HELP_COMMAND="dei"
+DOCKERENV_PLUGIN_HELP_TEXT="Creates .docker.env with settings based on system OS."
 DOCKERENV_PLUGIN_FUNCTION="dockerEnvRun"
 DOCKERENV_PLUGIN_HELP="dockerEnvHelp"
 
@@ -18,17 +20,17 @@ function dockerEnvRun {
 	
 	message "INFO" "Creating .docker.env file with OS as $OS_TYPE"
 	echo "HOST_UNAME=$OS_TYPE" > .docker.env
-	
-	if [ $OS_TYPE = Linux ]; then
-		echo "HOST_UID=$USER
+
+	case "${OS_TYPE}" in
+	  Linux)
+	    echo "HOST_UID=$USER
 HOST_GID=$GROUP" >> .docker.env
-	fi
+	  ;;
+	  Mac)
+	    echo "XDEBUG_REMOTE_HOST=host.docker.internal" >> .docker.env
+	  ;;
+  esac
 	
 	message "INFO" "Creating .docker.env completed"
 
-}
-
-# Function for output top level help
-function dockerEnvHelp {
-	printf "  dei\t\t\tCreates .docker.env with settings based on system."
 }

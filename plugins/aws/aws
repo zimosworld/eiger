@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+AWS_PLUGIN_COMMAND="aws aws-cli awscli"
+AWS_PLUGIN_ALLOW_ALIAS="true"
+AWS_PLUGIN_HELP_COMMAND="aws"
+AWS_PLUGIN_HELP_TEXT="AWS CLI is a unified tool that provides a consistent interface for interacting with all parts of AWS."
+AWS_PLUGIN_FUNCTION="awsRun"
+AWS_PLUGIN_HELP="awsHelp"
+
+AWS_PLUGIN_DOCKER_IMAGE="zimosworld/aws-cli"
+AWS_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Plugin entry point
+function awsRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "AWS")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "AWS")
+
+  $COMMAND_PREFIX docker run --rm -it -v "$PATH_PREFIX$HOME/.aws":/root/.aws -v "$PATH_PREFIX$(pwd)":/volume -w $PATH_PREFIX/volume/ $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}"
+	debug "Finished running AWS"
+}

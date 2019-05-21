@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Configs (Prefix with Plugin name)
+
+# Plugin configs
+TERRAFORM_PLUGIN_COMMAND="terraform"
+TERRAFORM_PLUGIN_ALLOW_ALIAS="true"
+TERRAFORM_PLUGIN_HELP_COMMAND="terraform"
+TERRAFORM_PLUGIN_HELP_TEXT="Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently."
+TERRAFORM_PLUGIN_FUNCTION="terraformRun"
+TERRAFORM_PLUGIN_HELP="terraformHelp"
+
+TERRAFORM_PLUGIN_DOCKER_IMAGE="hashicorp/terraform"
+TERRAFORM_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
+# Plugin entry point
+function terraformRun {
+
+  # Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "TERRAFORM")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "TERRAFORM")
+  # Plugin storage
+  local PLUGIN_STORAGE=$(getPluginStoragePath "terraform" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+
+  local TERRAFORM_LOCAL=$HOME/.terraformrc
+  if [[ "${OS_TYPE}" == "Windows" ]]; then
+    local TERRAFORM_LOCAL=$HOME/terraform.rc
+  fi
+
+  touch ${TERRAFORM_LOCAL}
+
+  local COMMANDS=( "plan apply destroy" )
+  local WORKSPACE_VARS=""
+  if [[ "${COMMANDS[*]}" == *"${2}"* ]]; then
+    # Get current workspace
+    local WORKSPACE=$(eval $COMMAND_PREFIX docker run --rm -it -v $PATH_PREFIX/:/volume --workdir $PATH_PREFIX/volume/$(pwd) $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION workspace show)
+
+    # Trim whitespaces from result
+    local WORKSPACE=$(echo -e "${WORKSPACE}" | tr -d '[:space:]')
+
+    # Define path for workspace vars
+    local VAR_FILE="config/${WORKSPACE}.tfvars"
+
+    # Check if workspace not default and file exists set variable to be used
+    if [[ "${WORKSPACE}" != "default" ]] && [[ -f "$(pwd)/${VAR_FILE}" ]]; then
+      WORKSPACE_VARS="-var-file=${VAR_FILE}"
+    fi
+  fi
+
+  # Run terraform command on container
+  $COMMAND_PREFIX docker run --rm -it -v "$PATH_PREFIX$PLUGIN_STORAGE":/root/.terraform.d -v "$PATH_PREFIX$TERRAFORM_LOCAL":/root/.terraformrc -v "$PATH_PREFIX$HOME/.ssh":/root/.ssh -v "$PATH_PREFIX$HOME/.aws":/root/.aws -v $PATH_PREFIX/:/volume --workdir "$PATH_PREFIX/volume/$(pwd)" $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}" $WORKSPACE_VARS
+  debug "Finished running terraform"
+
+}
