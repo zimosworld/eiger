@@ -11,10 +11,12 @@ COMPOSER_PLUGIN_FUNCTION="composerRun"
 COMPOSER_PLUGIN_HELP="composerHelp"
 COMPOSER_PLUGIN_INIT="composerInit"
 
+COMPOSER_PLUGIN_DOCKER_IMAGE="composer"
+COMPOSER_PLUGIN_DOCKER_IMAGE_VERSION="latest"
+
 # Default configs
 COMPOSER_ENABLED=true
 COMPOSER_PATH=/
-COMPOSER_VERSION=latest
 COMPOSER_IPR=false
 
 # Run Composer command inside docker container
@@ -31,10 +33,26 @@ function composerRun {
 	  COMPOSER_IPR_VALUE="--ignore-platform-reqs"
 	fi
 
+	case "${OS_TYPE}" in
+	  Linux*|Mac*)
+	    USER=www-data
+	    GROUP=www-data
+	  ;;
+	esac
+
+	# Get docker image name
+  local DOCKER_IMAGE=$(getDockerImageSetting "COMPOSER")
+  # Get docker image version
+  local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "COMPOSER")
   # Get plugin storage path
   local PLUGIN_STORAGE=$(getPluginStoragePath "COMPOSER" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP -v $PATH_PREFIX$PLUGIN_STORAGE/cache:/tmp/cache --volume $PATH_PREFIX$COMPOSER_FULL_PATH:/app --volume $PATH_PREFIX$SSHKEYPATH:/home/$USER/.ssh composer:$COMPOSER_VERSION $@ $COMPOSER_IPR_VALUE
+  # Check for old version of setting version
+  if [ ! -z $COMPOSER_VERSION ]; then
+    DOCKER_IMAGE_VERSION=$COMPOSER_VERSION
+  fi;
+
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP -v "$PATH_PREFIX$PLUGIN_STORAGE/cache":/tmp/cache --volume "$PATH_PREFIX$COMPOSER_FULL_PATH":/app --volume "$PATH_PREFIX$SSHKEYPATH":/home/$USER/.ssh $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@ $COMPOSER_IPR_VALUE
 	debug "Finished running composer"
 }
 
@@ -42,23 +60,30 @@ function composerRun {
 function composerInit {
 	local INIT_COMPOSER_ENABLED=false
 	local INIT_COMPOSER_PATH=
+	local INIT_COMPOSER_IMAGE=
 	local INIT_COMPOSER_VERSION=
+	local INIT_COMPOSER_IPR=
 	
 	if ask "Enabled Composer?" N; then
 		INIT_COMPOSER_ENABLED=true
 		
 		read -p "Relative path to composer.json file? [/]): " UI_COMPOSER_PATH
 		INIT_COMPOSER_PATH=${UI_COMPOSER_PATH:-/}
+
+		read -p "Which image would you like to use? [composer]: " UI_COMPOSER_IMAGE
+		INIT_COMPOSER_IMAGE=${UI_COMPOSER_IMAGE:-composer}
 		
-		read -p "Which version of Composer would you like to use? See https://hub.docker.com/_/composer/ for available versions. (Default: latest): " UI_COMPOSER_VERSION
+		read -p "Which version of the image would you like to use? [latest]: " UI_COMPOSER_VERSION
 		INIT_COMPOSER_VERSION=${UI_COMPOSER_VERSION:-latest}
+
+		read -p "Ignore platform requirement checks? [false]: " UI_COMPOSER_IPR
+		INIT_COMPOSER_IPR=${UI_COMPOSER_IPR:-false}
 	fi
-	
-	INIT_NODE_ENABLED=false
-	INIT_NODE_PATH=
-	INIT_NODE_VERSION=
-	
+
 	echo "COMPOSER_ENABLED=$INIT_COMPOSER_ENABLED
 COMPOSER_PATH=$INIT_COMPOSER_PATH
-COMPOSER_VERSION=$INIT_COMPOSER_VERSION"
+COMPOSER_DOCKER_IMAGE=$INIT_COMPOSER_IMAGE
+COMPOSER_DOCKER_IMAGE_VERSION=$INIT_COMPOSER_VERSION
+COMPOSER_IPR=$INIT_COMPOSER_IPR"
+
 }

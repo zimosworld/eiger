@@ -30,7 +30,7 @@ function terraformRun {
 
   touch ${TERRAFORM_LOCAL}
 
-  local COMMANDS=( "plan apply" )
+  local COMMANDS=( "plan apply destroy" )
   local WORKSPACE_VARS=""
   if [[ "${COMMANDS[*]}" == *"${2}"* ]]; then
     # Get current workspace
@@ -49,7 +49,7 @@ function terraformRun {
   fi
 
   # Run terraform command on container
-  $COMMAND_PREFIX docker run --rm -it -v $PATH_PREFIX$PLUGIN_STORAGE:/root/.terraform.d -v $PATH_PREFIX$TERRAFORM_LOCAL:/root/.terraformrc -v $PATH_PREFIX$HOME/.ssh:/root/.ssh -v $PATH_PREFIX$HOME/.aws:/root/.aws -v $PATH_PREFIX/:/volume --workdir $PATH_PREFIX/volume/$(pwd) $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}" $WORKSPACE_VARS
+  $COMMAND_PREFIX docker run --rm -it -v "$PATH_PREFIX$PLUGIN_STORAGE":/root/.terraform.d -v "$PATH_PREFIX$TERRAFORM_LOCAL":/root/.terraformrc -v "$PATH_PREFIX$HOME/.ssh":/root/.ssh -v "$PATH_PREFIX$HOME/.aws":/root/.aws -v $PATH_PREFIX/:/volume --workdir "$PATH_PREFIX/volume/$(pwd)" $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION "${@:2}" $WORKSPACE_VARS
   debug "Finished running terraform"
 
 }

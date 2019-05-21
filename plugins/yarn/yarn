@@ -32,7 +32,7 @@ function yarnRun {
   # Get plugin storage path
   local PLUGIN_STORAGE=$(getPluginStoragePath "YARN" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
 
-	$COMMAND_PREFIX docker run --rm -it $RUN_AS -v $PATH_PREFIX$PLUGIN_STORAGE/cache:/usr/local/share/.cache -v $PATH_PREFIX$(pwd):/usr/src/app --workdir $PATH_PREFIX/usr/src/app/$YARN_PATH $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
+	$COMMAND_PREFIX docker run --rm -it $RUN_AS -v "$PATH_PREFIX$PLUGIN_STORAGE/cache":/usr/local/share/.cache -v "$PATH_PREFIX$(pwd)":/usr/src/app --workdir "$PATH_PREFIX/usr/src/app/$YARN_PATH" $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
 	debug "Finished running yarn"
 }
 
@@ -41,6 +41,7 @@ function yarnInit {
 
 	local INIT_YARN_ENABLED=false
 	local INIT_YARN_PATH=
+	local INIT_YARN_IMAGE=
 	local INIT_YARN_VERSION=
 	
 	if ask "Enabled Yarn?" N; then
@@ -48,13 +49,16 @@ function yarnInit {
 		
 		read -p "Relative path to package.json file? [/]): " UI_YARN_PATH
 		INIT_YARN_PATH=${UI_YARN_PATH:-/}
-		
-		read -p "Which version of Node would you like to use? See https://hub.docker.com/_/node/ for available versions. (Default: 9.11.1): " UI_YARN_VERSION
-		INIT_YARN_VERSION=${UI_YARN_VERSION:-9.11.1}
+
+		read -p "Which image would you like to use? [node]: " UI_YARN_IMAGE
+		INIT_YARN_IMAGE=${UI_YARN_IMAGE:-node}
+
+		read -p "Which version of the image would you like to use? [latest]: " UI_YARN_VERSION
+		INIT_YARN_VERSION=${UI_YARN_VERSION:-latest}
 	fi
 	
 	echo "YARN_ENABLED=$INIT_YARN_ENABLED
 YARN_PATH=$INIT_YARN_PATH
-YARN_DOCKER_IMAGE=node
-YARN_DOCKER_VERSION=$INIT_YARN_VERSION"
+YARN_DOCKER_IMAGE=$INIT_YARN_IMAGE
+YARN_DOCKER_IMAGE_VERSION=$INIT_YARN_VERSION"
 }

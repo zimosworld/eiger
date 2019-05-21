@@ -14,9 +14,6 @@ PLUGIN_PLUGIN_HELP="pluginHelp"
 function pluginEntryPoint {
 
 	case $2 in
-		help|--help|-h)
-		  pluginCommandHelp
-		  ;;
 		update)
 		  pluginUpdate $3
       ;;
@@ -26,6 +23,9 @@ function pluginEntryPoint {
     install)
       pluginInstall $3 $4
       ;;
+    help|--help|-h|*)
+		  pluginCommandHelp
+		  ;;
 	esac
 
 }

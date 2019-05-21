@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 # Configs (Prefix with Plugin name)
 
@@ -6,7 +6,7 @@
 DOCKER_PLUGIN_COMMAND="docker"
 DOCKER_PLUGIN_ALLOW_ALIAS="false"
 DOCKER_PLUGIN_HELP_COMMAND="docker"
-DOCKER_PLUGIN_HELP_TEXT="Custom docker shortcuts."
+DOCKER_PLUGIN_HELP_TEXT="Docker shortcuts to starting, stopping, setting up and managing containers."
 DOCKER_PLUGIN_FUNCTION="dockerEntryPoint"
 DOCKER_PLUGIN_HELP="dockerHelp"
 

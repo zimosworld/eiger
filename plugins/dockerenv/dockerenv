@@ -20,11 +20,16 @@ function dockerEnvRun {
 	
 	message "INFO" "Creating .docker.env file with OS as $OS_TYPE"
 	echo "HOST_UNAME=$OS_TYPE" > .docker.env
-	
-	if [ $OS_TYPE = Linux ]; then
-		echo "HOST_UID=$USER
+
+	case "${OS_TYPE}" in
+	  Linux)
+	    echo "HOST_UID=$USER
 HOST_GID=$GROUP" >> .docker.env
-	fi
+	  ;;
+	  Mac)
+	    echo "XDEBUG_REMOTE_HOST=host.docker.internal" >> .docker.env
+	  ;;
+  esac
 	
 	message "INFO" "Creating .docker.env completed"
 

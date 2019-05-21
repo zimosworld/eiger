@@ -5,7 +5,7 @@
 # Plugin configs
 ALIASES_PLUGIN_COMMAND="aliases"
 ALIASES_PLUGIN_HELP_COMMAND="aliases"
-ALIASES_PLUGIN_HELP_TEXT="Manage aliases for Eiger plugins allowing you to run them without eiger in front."
+ALIASES_PLUGIN_HELP_TEXT="Manage aliases for eiger plugins allowing you to run them without eiger in prefixed."
 ALIASES_PLUGIN_FUNCTION="aliasEntryPoint"
 ALIASES_PLUGIN_HELP="aliasHelp"
 
