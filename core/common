@@ -147,5 +147,11 @@ function getDockerImageVersionSetting {
 
 function getPluginStoragePath {
 
-  echo "${STORAGEPATH}/${1}/${2}/${3}"
+  local path="${STORAGEPATH}/${1}"
+
+  if [[ ! -z $2 ]]; then
+      path+=$2
+  fi
+
+  echo $path
 }

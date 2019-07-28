@@ -2,6 +2,7 @@
 
 DEBUG=false
 INSTALL_PATH=~/.eiger
+USERDATA_PATH=$INSTALL_PATH/userdata
 
 ####################################################
 # Functions
@@ -55,26 +56,36 @@ function runInstaller {
 
     if git clone https://github.com/zimosworld/eiger.git .; then
 
-        message "INFO" "Script installed, adding alias..."
+        message "INFO" "Eiger downloaded, now installing, this may require sudo access..."
 
-        touch ~/.eiger/eiger.aliases
+        case "$(uname -s)" in
+            Darwin*|Linux*)
+                local mainPath="$(echo "$INSTALL_PATH/bin" 2>&1 | sudo tee -a /etc/paths 2>&1)"
+                local mainPath="$(echo "$USERDATA_PATH/composer/vendor/bin" 2>&1 | sudo tee -a /etc/paths 2>&1)"
 
-        if echo "
+                if [[ "$mainPath" != "$INSTALL_PATH/bin" ]]; then
+                    message "ERROR" "Error updating path. Installation stopped..."
+                    exit 1
+                fi
+                ;;
+            CYGWIN*|MINGW*)
+                touch ~/.eiger/eiger.aliases
+
+                if echo "
 PATH=\$PATH:~/.eiger
 source ~/.eiger/eiger.aliases
 alias alias_refresh='source ~/.eiger/eiger.aliases'" >> ~/.bashrc; then
 
-            chmod 740 ~/.eiger/eiger
+                    chmod 740 ~/.eiger/eiger
 
-            source ~/.bashrc
+                    source ~/.bashrc
+                    message "INFO" "Alias added successfully, installation completed."
+                else
+                    message "ERROR" "There was an error adding Alias. Exiting..."
+                fi
 
-            if [ "$(uname -s)" = 'Darwin' ]; then
-              echo "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi" >> ~/.bash_profile
-            fi
-            message "INFO" "Alias added successfully, installation completed."
-        else
-            message "ERROR" "There was an error adding Alias. Exiting..."
-        fi
+              ;;
+        esac
 
     else
         message "ERROR" "There was an issue pulling down the script. Exiting..."

@@ -45,14 +45,14 @@ function composerRun {
   # Get docker image version
   local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "COMPOSER")
   # Get plugin storage path
-  local PLUGIN_STORAGE=$(getPluginStoragePath "COMPOSER" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+  local PLUGIN_STORAGE=$(getPluginStoragePath "composer")
 
   # Check for old version of setting version
   if [ ! -z $COMPOSER_VERSION ]; then
     DOCKER_IMAGE_VERSION=$COMPOSER_VERSION
   fi;
 
-	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP -v "$PATH_PREFIX$PLUGIN_STORAGE/cache":/tmp/cache --volume "$PATH_PREFIX$COMPOSER_FULL_PATH":/app --volume "$PATH_PREFIX$SSHKEYPATH":/home/$USER/.ssh $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@ $COMPOSER_IPR_VALUE
+	$COMMAND_PREFIX docker run --rm --interactive --tty --user $USER:$GROUP -v "$PATH_PREFIX$PLUGIN_STORAGE":/tmp --volume "$PATH_PREFIX$COMPOSER_FULL_PATH":/app --volume "$PATH_PREFIX$SSHKEYPATH":/home/$USER/.ssh $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@ $COMPOSER_IPR_VALUE
 	debug "Finished running composer"
 }
 

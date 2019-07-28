@@ -11,10 +11,6 @@ ALIASES_PLUGIN_HELP="aliasHelp"
 
 function aliasEntryPoint {
 
-  if [[ ! -f ~/.eiger/eiger.aliases ]]; then
-      touch ~/.eiger/eiger.aliases
-  fi
-
   echo "Please select an option: "
   PS3="Please enter your choice: "
   options=("Enable All" "Disable All" "Toggle" "Quit")
@@ -47,33 +43,38 @@ function aliasEntryPoint {
 # Enable aliases for all plugin commands
 function enableAll {
 
-  > ~/.eiger/eiger.aliases
-
   for PLUGIN in "${PLUGINS[@]}"
   do
     if [[ "$(eval echo "$"${PLUGIN}_PLUGIN_ALLOW_ALIAS)" == "true" ]] && [[ ! -z $(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND) ]]; then
       local COMMAND=$(eval echo "$"${PLUGIN}_PLUGIN_HELP_COMMAND)
 
-      echo "alias $COMMAND='eiger $COMMAND'" >> ~/.eiger/eiger.aliases
+      aliasesMake $COMMAND
     fi
   done
 
   echo "All aliases added"
-  showRefreshMessage
 }
 
 # Disable aliases for all plugin commands
 function disableAll {
   #Clear out eiger aliases file
-  echo "" > ~/.eiger/eiger.aliases
+  local ACTIVE_ALIASES=($(find $ALIASPATH -maxdepth 1 -mindepth 1 -type f | sed "s|${ALIASPATH}/||g" | sort -n))
+
+  for ALIAS in "${ACTIVE_ALIASES[@]}"
+  do
+    if [[ "$ALIAS" == "eiger" ]]; then
+        continue
+    fi
+
+    aliasesRemove $ALIAS
+  done
   echo "All aliases removed"
-  showRefreshMessage
 }
 
 # Prompt for showing toggle aliases
 function listAliases {
 
-  local ACTIVE_ALIASES=$(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sort -n)
+  local ACTIVE_ALIASES=($(find $ALIASPATH -maxdepth 1 -mindepth 1 -type f | sed "s|${ALIASPATH}/||g" | sort -n))
 
   OPTIONS=
   for PLUGIN in "${PLUGINS[@]}"
@@ -99,12 +100,11 @@ function listAliases {
   do
     case $opt in
       "Quit")
-        showRefreshMessage
         break
         ;;
       *)
         toggleAliases $opt
-        break;
+        break
         ;;
     esac
   done
@@ -114,30 +114,32 @@ function listAliases {
 function toggleAliases {
 
   IFS=' '
-  local SELECTED=$(echo "$1" | grep -o '.* -' | sed 's/ -//g')
-  local ACTIVE_ALIASES=($(grep -o 'alias .*=' ~/.eiger/eiger.aliases | sed 's/alias //g' | sed 's/=//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | sort -n))
+  local SELECTED=$1
+  local ALIAS=$(echo "$SELECTED" | grep -o '.* -' | sed 's/ -//g')
+  local ACTIVE_ALIASES=$(find $ALIASPATH -maxdepth 1 -mindepth 1 -type f | sed "s|${ALIASPATH}/||g" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | sort -n)
 
-  if [[ "${ACTIVE_ALIASES[*]}" == *"${SELECTED}"* ]]; then
-    ACTIVE_ALIASES=( "${ACTIVE_ALIASES[@]/$SELECTED/}" )
+  if [[ "${SELECTED}" == *"- Not Active" ]]; then
+    aliasesMake $ALIAS
   else
-    ACTIVE_ALIASES+=( $SELECTED )
+    aliasesRemove $ALIAS
   fi
-
-  > ~/.eiger/eiger.aliases
-
-  for LINE in "${ACTIVE_ALIASES[@]}"
-  do
-    if [[ "${LINE}" == '' ]]; then
-      continue
-    fi
-
-    echo "alias $LINE='eiger $LINE'" >> ~/.eiger/eiger.aliases
-  done
 
   listAliases
 }
 
-# Show message to advise changes need some action
-function showRefreshMessage {
-  echo "Please open a new terminal window or run 'alias_refresh' for the applied changes to be active."
+function aliasesMake {
+
+    local alias=$1
+    local scriptPath="$ALIASPATH/$alias"
+
+    echo "eiger $alias \$@" > $scriptPath
+    chmod 740 $scriptPath
+}
+
+function aliasesRemove {
+
+    local alias=$1
+    local scriptPath="$ALIASPATH/$alias"
+
+    rm $scriptPath
 }

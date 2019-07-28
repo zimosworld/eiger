@@ -1,0 +1,4 @@
+#!/bin/bash
+INSTALLPATH=$(dirname $0)
+
+$INSTALLPATH/../eiger $@

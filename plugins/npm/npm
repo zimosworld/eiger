@@ -30,14 +30,19 @@ function npmRun {
   # Get docker image version
   local DOCKER_IMAGE_VERSION=$(getDockerImageVersionSetting "NPM")
   # Get plugin storage path
-  local PLUGIN_STORAGE=$(getPluginStoragePath "NPM" "${DOCKER_IMAGE}" "${DOCKER_IMAGE_VERSION}")
+  local PLUGIN_STORAGE=$(getPluginStoragePath "npm")
+
+  if [[ ! -z $PLUGIN_STORAGE/config/.npmrc ]]; then
+	  mkdir -p $PLUGIN_STORAGE/config
+	  echo "prefix=/npm-global" > $PLUGIN_STORAGE/config/.npmrc
+	fi
 
   # Check for old version of setting version
   if [ ! -z $NPM_VERSION ]; then
     DOCKER_IMAGE_VERSION=$NPM_VERSION
   fi;
 
-	$COMMAND_PREFIX docker run --rm -it $RUN_AS -v "$PATH_PREFIX$PLUGIN_STORAGE/cache":/home/$USER/.npm -v "$PATH_PREFIX$(pwd)":/usr/src/app --workdir "$PATH_PREFIX/usr/src/app/$NPM_PATH" $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
+	$COMMAND_PREFIX docker run --rm -it -v "$PATH_PREFIX$PLUGIN_STORAGE/config/.npmrc":"/root/.npmrc" -v "$PATH_PREFIX$PLUGIN_STORAGE/storage":/npm-global -v "$PATH_PREFIX$(pwd)":/usr/src/app --workdir "$PATH_PREFIX/usr/src/app/$NPM_PATH" $DOCKER_IMAGE:$DOCKER_IMAGE_VERSION $@
 	debug "Finished running npm"
 }
 
